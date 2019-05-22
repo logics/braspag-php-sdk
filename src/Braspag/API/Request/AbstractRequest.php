@@ -32,6 +32,8 @@ abstract class AbstractRequest
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
             'Authorization: Bearer ' . $this->accessToken->getTokenBase64(),
+            'MerchantId: ' . $this->accessToken->getMerchant()->getId(),
+            'MerchantKey: ' . $this->accessToken->getMerchant()->getKey(),
             'RequestId: ' . uniqid()
         ];
 

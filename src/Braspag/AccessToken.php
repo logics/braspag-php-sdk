@@ -5,10 +5,9 @@ namespace Braspag;
 class AccessToken
 {
     /**
-     * The API Cielo E-Commerce Client ID
-     * @var string
+     * @var Merchant
      */
-    private $clientId;
+    private $merchant;
 
     /**
      * The Braspag Client Secret
@@ -17,13 +16,13 @@ class AccessToken
     private $clientSecret;
 
     /**
-     * @param $clientId
-     * @param $clientSecret
+     * @param Merchant $merchant
+     * @param string $clientSecret  The clientSecret key on Braspag
      */
-    public function __construct($clientId, $clientSecret)
+    public function __construct(Merchant $merchant, $clientSecret)
     {
-        $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
+        $this->merchant = $merchant;
     }
 
     /**
@@ -32,18 +31,17 @@ class AccessToken
      */
     public function getTokenBase64()
     {
-        return base64_encode($this->clientId . $this->clientSecret);
+        return base64_encode($this->merchant->getId() . $this->clientSecret);
     }
 
     /**
-     * Gets the merchant identification number on Cielo
-     *
-     * @return string
+     * @return Merchant
      */
-    public function getClientId()
+    public function getMerchant(): Merchant
     {
-        return $this->clientId;
+        return $this->merchant;
     }
+
 
     /**
      * Gets the client secret identification on Braspag
