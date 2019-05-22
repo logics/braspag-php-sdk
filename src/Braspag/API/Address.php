@@ -2,7 +2,6 @@
 
 namespace Braspag\API;
 
-
 class Address implements BraspagSerializable
 {
     private $street;

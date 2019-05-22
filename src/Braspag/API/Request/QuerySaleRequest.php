@@ -45,5 +45,4 @@ class QuerySaleRequest extends AbstractRequest
     {
         return Sale::fromJson($json);
     }
-
 }

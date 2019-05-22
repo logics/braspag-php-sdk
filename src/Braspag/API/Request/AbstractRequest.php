@@ -5,23 +5,44 @@ namespace Braspag\API\Request;
 use Braspag\AccessToken;
 use Braspag\API\Sale;
 
+/**
+ * Class AbstractRequest
+ *
+ * @package Braspag\API\Request
+ */
 abstract class AbstractRequest
 {
+    /**
+     * @var AccessToken
+     */
     private $accessToken;
 
+    /**
+     * AbstractRequest constructor.
+     *
+     * @param AccessToken $accessToken
+     */
     public function __construct(AccessToken $accessToken)
     {
         $this->accessToken = $accessToken;
     }
 
-    public abstract function execute($param);
-
-    protected abstract function unserialize($json);
+    /**
+     * @param  $param
+     * @return mixed
+     */
+    abstract public function execute($param);
 
     /**
-     * @param $method
-     * @param $url
-     * @param Sale|null $sale
+     * @param  $json
+     * @return mixed
+     */
+    abstract protected function unserialize($json);
+
+    /**
+     * @param  $method
+     * @param  $url
+     * @param  Sale|null $sale
      * @return null
      * @throws BraspagRequestException
      */
@@ -76,8 +97,8 @@ abstract class AbstractRequest
     }
 
     /**
-     * @param $statusCode
-     * @param $responseBody
+     * @param  $statusCode
+     * @param  $responseBody
      * @return mixed
      * @throws BraspagRequestException
      */

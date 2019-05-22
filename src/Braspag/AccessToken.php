@@ -52,5 +52,4 @@ class AccessToken
     {
         return $this->clientSecret;
     }
-
 }

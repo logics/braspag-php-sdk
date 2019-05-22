@@ -2,7 +2,6 @@
 
 namespace Braspag\API;
 
-
 class Customer implements BraspagSerializable
 {
     private $name;
