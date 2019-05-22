@@ -1,0 +1,24 @@
+{
+    "name": "romeugodoi/braspag-php-sdk",
+    "description" : "Integração com a API de pagamentos da Braspag",
+    "type" : "library",
+    "keywords": [],
+    "license" : "MIT",
+    "homepage" : "https://github.com/romeugodoi/braspag-php-sdk",
+    "require" : {
+        "php" : "^7.0",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "authors": [
+        {
+            "name": "Romeu Godoi",
+            "email": "romeu.godoi@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Braspag\\" : "src/Braspag"
+        }
+    }
+}
