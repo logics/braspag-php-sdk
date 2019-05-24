@@ -2,12 +2,15 @@
 
 SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https://github.com/DeveloperCielo/API-3.0-PHP).
 
+[![Latest Stable Version](https://poser.pugx.org/romeugodoi/braspag-php-sdk/v/stable)](https://packagist.org/packages/romeugodoi/braspag-php-sdk)
+[![License](https://poser.pugx.org/romeugodoi/braspag-php-sdk/license)](https://packagist.org/packages/romeugodoi/braspag-php-sdk)
+
 ## Recursos
 
-* [x] Pagamentos por cartão de crédito.
-    * [X] Split de pagamentos com regras definidas.
-* [x] Consulta de pagamentos.
 * [x] Tokenização de cartão.
+* [ ] Pagamentos por cartão de crédito.
+    * [ ] Split de pagamentos com regras definidas.
+* [ ] Consulta de pagamentos.
 * [ ] Pagamentos recorrentes.
     * [ ] Com autorização na primeira recorrência.
     * [ ] Com autorização a partir da primeira recorrência.
@@ -30,25 +33,44 @@ providenciar o redirecionamento do usuário.
 ## Instalando o SDK
 Caso ainda não possua o Composer instalado, siga as instruções em [getcomposer.org](https://getcomposer.org).
 
-Se já possui um arquivo `composer.json`, basta adicionar a seguinte dependência ao seu projeto:
-
-```json
-"require": {
-    "romeugodoi/braspag-php-sdk": "^1.0"
-}
-```
-
-Com a dependência adicionada ao `composer.json`, basta executar:
-
-```
-composer install
-```
-
-Alternativamente, você pode executar diretamente em seu terminal:
+Se já possui um arquivo `composer.json`, basta executar diretamente em seu terminal:
 
 ```
 composer require "romeugodoi/braspag-php-sdk"
 ```
+
+## Exemplos de uso
+
+### Tokenização de cartão:
+Caso não queira guardar os dados sensíveis do cartão, você pode gerar um token dele para uso nas transações:
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Braspag\API\Braspag;
+use Braspag\API\CreditCard;
+use Braspag\API\Environment;
+use Braspag\Authenticator;
+
+// Cria uma instância do cartão para enviar à Cielo
+$card = new CreditCard();
+$card->setCustomerName('John Rambo');
+$card->setCardNumber('0000000000000001');
+$card->setHolder('John Rambo');
+$card->setExpirationDate('09/2020');
+$card->setBrand('Master');
+
+// Configure os tokens de autenticação (adquiridos junto à Braspag)
+$auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
+
+// Solicita a tokenização do card
+$card = (new Braspag($auth, Environment::sandbox()))->tokenizeCard($card);
+
+// Get the card token
+$cardToken = $card->getCardToken();
+```
+
 
 ## Produtos e Bandeiras suportadas e suas constantes
 

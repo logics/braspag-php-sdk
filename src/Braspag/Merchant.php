@@ -2,7 +2,7 @@
 
 namespace Braspag;
 
-class Merchant
+class Merchant implements TokenAuthenticable
 {
     /** @var string */
     private $id;
@@ -20,6 +20,14 @@ class Merchant
     {
         $this->id = $id;
         $this->key = $key;
+    }
+
+    public function getAuthenticationHeaders(): array
+    {
+        return [
+            'MerchantId: ' . $this->getId(),
+            'MerchantKey: ' . $this->getKey(),
+        ];
     }
 
     /**

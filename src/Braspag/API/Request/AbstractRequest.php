@@ -2,8 +2,7 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\AccessToken;
-use Braspag\API\Sale;
+use Braspag\TokenAuthenticable;
 
 /**
  * Class AbstractRequest
@@ -13,18 +12,18 @@ use Braspag\API\Sale;
 abstract class AbstractRequest
 {
     /**
-     * @var AccessToken
+     * @var TokenAuthenticable
      */
-    private $accessToken;
+    private $tokenAuthenticable;
 
     /**
      * AbstractRequest constructor.
      *
-     * @param AccessToken $accessToken
+     * @param TokenAuthenticable $tokenAuthenticable
      */
-    public function __construct(AccessToken $accessToken)
+    public function __construct(TokenAuthenticable $tokenAuthenticable)
     {
-        $this->accessToken = $accessToken;
+        $this->tokenAuthenticable = $tokenAuthenticable;
     }
 
     /**
@@ -42,21 +41,18 @@ abstract class AbstractRequest
     /**
      * @param  $method
      * @param  $url
-     * @param  Sale|null $sale
+     * @param  \JsonSerializable|null $content
      * @return null
      * @throws BraspagRequestException
      */
-    protected function sendRequest($method, $url, Sale $sale = null)
+    protected function sendRequest($method, $url, \JsonSerializable $content = null)
     {
-        $headers = [
+        $headers = array_merge([
             'Accept: application/json',
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
-            'Authorization: Bearer ' . $this->accessToken->getTokenBase64(),
-            'MerchantId: ' . $this->accessToken->getMerchant()->getId(),
-            'MerchantKey: ' . $this->accessToken->getMerchant()->getKey(),
-            'RequestId: ' . uniqid()
-        ];
+            'RequestId: ' . uniqid(),
+        ], $this->tokenAuthenticable->getAuthenticationHeaders());
 
         $curl = curl_init($url);
 
@@ -73,8 +69,8 @@ abstract class AbstractRequest
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         }
 
-        if ($sale !== null) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($sale));
+        if ($content !== null) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($content));
 
             $headers[] = 'Content-Type: application/json';
         } else {

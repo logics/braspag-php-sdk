@@ -4,7 +4,7 @@ namespace Braspag\API\Request;
 
 use Braspag\AccessToken;
 use Braspag\API\Environment;
-use Braspag\API\Payment;
+use Braspag\API\Sale;
 
 class UpdateSaleRequest extends AbstractRequest
 {
@@ -37,7 +37,7 @@ class UpdateSaleRequest extends AbstractRequest
 
     /**
      * @param $paymentId
-     * @return Payment
+     * @return Sale
      * @throws BraspagRequestException
      */
     public function execute($paymentId)
@@ -61,11 +61,11 @@ class UpdateSaleRequest extends AbstractRequest
     /**
      * @param $json
      *
-     * @return Payment
+     * @return Sale
      */
     protected function unserialize($json)
     {
-        return Payment::fromJson($json);
+        return Sale::fromJson($json);
     }
 
     /**

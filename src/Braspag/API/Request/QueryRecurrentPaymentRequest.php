@@ -2,9 +2,9 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\AccessToken;
 use Braspag\API\Environment;
 use Braspag\API\RecurrentPayment;
+use Braspag\Merchant;
 
 class QueryRecurrentPaymentRequest extends AbstractRequest
 {
@@ -13,12 +13,12 @@ class QueryRecurrentPaymentRequest extends AbstractRequest
     /**
      * QueryRecurrentPaymentRequest constructor.
      *
-     * @param AccessToken $accessToken
+     * @param Merchant $merchant
      * @param Environment $environment
      */
-    public function __construct(AccessToken $accessToken, Environment $environment)
+    public function __construct(Merchant $merchant, Environment $environment)
     {
-        parent::__construct($accessToken);
+        parent::__construct($merchant);
 
         $this->environment = $environment;
     }

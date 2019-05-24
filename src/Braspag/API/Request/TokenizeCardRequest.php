@@ -2,27 +2,27 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\AccessToken;
 use Braspag\API\CreditCard;
 use Braspag\API\Environment;
+use Braspag\Merchant;
 
 class TokenizeCardRequest extends AbstractRequest
 {
     /** @var Environment $environment */
     private $environment;
 
-    /** @var AccessToken $accessToken */
-    private $accessToken;
+    /** @var Merchant $merchant */
+    private $merchant;
 
     /**
-     * @param AccessToken $accessToken
+     * @param Merchant $merchant
      * @param Environment $environment
      */
-    public function __construct(AccessToken $accessToken, Environment $environment)
+    public function __construct(Merchant $merchant, Environment $environment)
     {
-        parent::__construct($accessToken);
+        parent::__construct($merchant);
 
-        $this->accessToken = $accessToken;
+        $this->merchant = $merchant;
         $this->environment = $environment;
     }
 
