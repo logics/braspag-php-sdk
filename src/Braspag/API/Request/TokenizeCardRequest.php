@@ -4,25 +4,28 @@ namespace Braspag\API\Request;
 
 use Braspag\API\CreditCard;
 use Braspag\API\Environment;
-use Braspag\Merchant;
+use Braspag\Authenticator;
 
 class TokenizeCardRequest extends AbstractRequest
 {
     /** @var Environment $environment */
     private $environment;
 
-    /** @var Merchant $merchant */
-    private $merchant;
+    /** @var Authenticator $merchant */
+    private $authenticator;
 
     /**
-     * @param Merchant $merchant
+     * @param Authenticator $authenticator
      * @param Environment $environment
      */
-    public function __construct(Merchant $merchant, Environment $environment)
+    public function __construct(Authenticator $authenticator, Environment $environment)
     {
-        parent::__construct($merchant);
+        parent::__construct([
+            'MerchantId: ' . $authenticator->getMerchant()->getId(),
+            'MerchantKey: ' . $authenticator->getMerchant()->getKey(),
+        ]);
 
-        $this->merchant = $merchant;
+        $this->authenticator = $authenticator;
         $this->environment = $environment;
     }
 
@@ -33,7 +36,7 @@ class TokenizeCardRequest extends AbstractRequest
      */
     public function execute($param)
     {
-        $url = $this->environment->getApiUrl() . '1/card/';
+        $url = $this->environment->getCieloApiUrl() . '1/card/';
 
         return $this->sendRequest('POST', $url, $param);
     }

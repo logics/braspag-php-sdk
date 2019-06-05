@@ -4,20 +4,28 @@ namespace Braspag\API;
 
 class Environment implements \Braspag\Environment
 {
-    private $api;
+    private $apiCielo;
 
-    private $apiQuery;
+    private $apiCieloQuery;
+
+    private $apiSplit;
+
+    private $apiAuth;
 
     /**
      * The environment constructor.
      *
-     * @param $api
-     * @param $apiQuery
+     * @param string $apiCielo
+     * @param string $apiCieloQuery
+     * @param string $apiSplit
+     * @param string $apiAuth
      */
-    private function __construct($api, $apiQuery)
+    private function __construct($apiCielo, $apiCieloQuery, $apiSplit, $apiAuth)
     {
-        $this->api = $api;
-        $this->apiQuery = $apiQuery;
+        $this->apiCielo = $apiCielo;
+        $this->apiCieloQuery = $apiCieloQuery;
+        $this->apiSplit = $apiSplit;
+        $this->apiAuth = $apiAuth;
     }
 
     /**
@@ -25,10 +33,12 @@ class Environment implements \Braspag\Environment
      */
     public static function sandbox(): self
     {
-        $api = 'https://apisandbox.cieloecommerce.cielo.com.br/';
-        $apiQuery = 'https://apiquerysandbox.cieloecommerce.cielo.com.br/';
+        $apiCielo = 'https://apisandbox.cieloecommerce.cielo.com.br/';
+        $apiCieloQuery = 'https://apiquerysandbox.cieloecommerce.cielo.com.br/';
+        $apiSplit = 'https://splitsandbox.braspag.com.br/';
+        $apiAuth = 'https://authsandbox.braspag.com.br/';
 
-        return new Environment($api, $apiQuery);
+        return new Environment($apiCielo, $apiCieloQuery, $apiSplit, $apiAuth);
     }
 
     /**
@@ -36,29 +46,47 @@ class Environment implements \Braspag\Environment
      */
     public static function production(): self
     {
-        $api = 'https://api.cieloecommerce.cielo.com.br/';
-        $apiQuery = 'https://apiquery.cieloecommerce.cielo.com.br/';
+        $apiCielo = 'https://api.cieloecommerce.cielo.com.br/';
+        $apiCieloQuery = 'https://apiquery.cieloecommerce.cielo.com.br/';
+        $apiSplit = 'https://split.braspag.com.br/';
+        $apiAuth = 'https://auth.braspag.com.br/';
 
-        return new Environment($api, $apiQuery);
+        return new Environment($apiCielo, $apiCieloQuery, $apiSplit, $apiAuth);
     }
 
     /**
-     * Gets the environment's Api URL
+     * Gets the environment's Api Cielo URL
      *
      * @return string the Api URL
      */
-    public function getApiUrl(): string
+    public function getCieloApiUrl(): string
     {
-        return $this->api;
+        return $this->apiCielo;
     }
 
     /**
-     * Gets the environment's Api Query URL
+     * Gets the environment's Api Cielo Query URL
      *
      * @return string Api Query URL
      */
-    public function getApiQueryURL(): string
+    public function getCieloApiQueryURL(): string
     {
-        return $this->apiQuery;
+        return $this->apiCieloQuery;
+    }
+
+    /**
+     * @return string Api Split URL
+     */
+    public function getSplitApiUrl()
+    {
+        return $this->apiSplit;
+    }
+
+    /**
+     * @return string Api OAuth2 URL
+     */
+    public function getApiAuthUrl()
+    {
+        return $this->apiAuth;
     }
 }

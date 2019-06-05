@@ -2,8 +2,6 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\TokenAuthenticable;
-
 /**
  * Class AbstractRequest
  *
@@ -12,18 +10,18 @@ use Braspag\TokenAuthenticable;
 abstract class AbstractRequest
 {
     /**
-     * @var TokenAuthenticable
+     * @var array
      */
-    private $tokenAuthenticable;
+    private $headers;
 
     /**
      * AbstractRequest constructor.
      *
-     * @param TokenAuthenticable $tokenAuthenticable
+     * @param array $headers
      */
-    public function __construct(TokenAuthenticable $tokenAuthenticable)
+    public function __construct(array $headers = array())
     {
-        $this->tokenAuthenticable = $tokenAuthenticable;
+        $this->headers = $headers;
     }
 
     /**
@@ -52,7 +50,7 @@ abstract class AbstractRequest
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
             'RequestId: ' . uniqid(),
-        ], $this->tokenAuthenticable->getAuthenticationHeaders());
+        ], $this->headers);
 
         $curl = curl_init($url);
 
@@ -70,7 +68,8 @@ abstract class AbstractRequest
         }
 
         if ($content !== null) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($content));
+            $postFields = json_encode($content);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $postFields);
 
             $headers[] = 'Content-Type: application/json';
         } else {

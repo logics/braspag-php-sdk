@@ -5,6 +5,7 @@ namespace Braspag\API;
 class Payment implements BraspagSerializable
 {
     const PAYMENTTYPE_CREDITCARD = 'CreditCard';
+    const PAYMENTTYPE_SPLITTED_CARDCARD = 'SplittedCreditCard';
     const PAYMENTTYPE_DEBITCARD = 'DebitCard';
     const PAYMENTTYPE_ELECTRONIC_TRANSFER = 'ElectronicTransfer';
     const PAYMENTTYPE_BOLETO = 'Boleto';
@@ -12,20 +13,27 @@ class Payment implements BraspagSerializable
     const PROVIDER_BANCO_DO_BRASIL = 'BancoDoBrasil';
     const PROVIDER_SIMULADO = 'Simulado';
 
+    const STATUS_NOT_FINISHED = 0;      // Aguardando atualização de status
+    const STATUS_AUTHORIZED = 1;        // Pagamento apto a ser capturado ou definido como pago
+    const STATUS_PAYMENT_CONFIRMED = 2; // Pagamento confirmado e finalizado
+    const STATUS_DENIED = 3;            // Pagamento negado por Autorizador
+    const STATUS_VOIDED = 10;           // Pagamento cancelado
+    const STATUS_REFUNDED = 11;         // Pagamento cancelado após 23:59 do dia de autorização
+    const STATUS_PENDING = 12;          // Aguardando Status de instituição financeira
+    const STATUS_ABORTED = 13;          // Pagamento cancelado por falha no processamento ou por ação do AF
+    const STATUS_SCHEDULED = 20;        // Recorrência agendada
+
     private $serviceTaxAmount;
     private $installments;
+
     private $interest;
     private $capture = false;
     private $authenticate = false;
-    private $recurrent;
-    private $recurrentPayment;
-    private $creditCard;
-    private $debitCard;
     private $authenticationUrl;
     private $tid;
     private $proofOfSale;
     private $authorizationCode;
-    private $softDescriptor = "";
+    private $softDescriptor = "Teste";
     private $returnUrl;
     private $provider;
     private $paymentId;
@@ -49,22 +57,34 @@ class Payment implements BraspagSerializable
     private $boletoNumber;
     private $barCodeNumber;
     private $digitableLine;
+    private $recurrent;
+    private $recurrentPayment;
+    private $creditCard;
+    private $debitCard;
     private $address;
     private $assignor;
     private $demonstrative;
     private $identification;
     private $instructions;
 
+    /** @var SplitPayment[] */
+    private $splitPayments;
+
+    /** @var FraudAnalysis */
+    private $fraudAnalysis;
+
     /**
      * Payment constructor.
      *
      * @param int $amount
      * @param int $installments
+     * @param null|SplitPayment[] $splitPayments
      */
-    public function __construct($amount = 0, $installments = 1)
+    public function __construct($amount = 0, $installments = 1, $splitPayments = null)
     {
         $this->setAmount($amount);
         $this->setInstallments($installments);
+        $this->setSplitPayments($splitPayments);
     }
 
     /**
@@ -102,6 +122,19 @@ class Payment implements BraspagSerializable
         if (isset($data->DebitCard)) {
             $this->debitCard = new CreditCard();
             $this->debitCard->populate($data->DebitCard);
+        }
+        if (isset($data->SplitPayments) && is_array($data->SplitPayments)) {
+            $this->splitPayments = [];
+
+            foreach ($data->SplitPayments as $splitPaymentData) {
+                $splitPayment = new SplitPayment();
+                $splitPayment->populate($splitPaymentData);
+
+                $this->splitPayments[] = $splitPayment;
+            }
+        }
+        if (isset($data->FraudAnalysis)) {
+            $this->fraudAnalysis = (new FraudAnalysis())->populate($data->FraudAnalysis);
         }
 
         $this->expirationDate = isset($data->ExpirationDate) ? $data->ExpirationDate : null;
@@ -141,7 +174,7 @@ class Payment implements BraspagSerializable
      */
     public function jsonSerialize()
     {
-        return get_object_vars($this);
+        return array_filter(get_object_vars($this));
     }
 
     /**
@@ -153,7 +186,11 @@ class Payment implements BraspagSerializable
     public function creditCard($securityCode, $brand)
     {
         $card = $this->newCard($securityCode, $brand);
-        $this->setType(self::PAYMENTTYPE_CREDITCARD);
+
+        if (is_null($this->type)) {
+            $this->setType(self::PAYMENTTYPE_CREDITCARD);
+        }
+
         $this->setCreditCard($card);
         return $card;
     }
@@ -181,7 +218,11 @@ class Payment implements BraspagSerializable
     public function debitCard($securityCode, $brand)
     {
         $card = $this->newCard($securityCode, $brand);
-        $this->setType(self::PAYMENTTYPE_DEBITCARD);
+
+        if (is_null($this->type)) {
+            $this->setType(self::PAYMENTTYPE_DEBITCARD);
+        }
+
         $this->setDebitCard($card);
         return $card;
     }
@@ -731,7 +772,7 @@ class Payment implements BraspagSerializable
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getStatus()
     {
@@ -993,6 +1034,42 @@ class Payment implements BraspagSerializable
     public function setInstructions($instructions)
     {
         $this->instructions = $instructions;
+        return $this;
+    }
+
+    /**
+     * @return SplitPayment[]
+     */
+    public function getSplitPayments(): ?array
+    {
+        return $this->splitPayments;
+    }
+
+    /**
+     * @param SplitPayment[] $splitPayments
+     * @return Payment
+     */
+    public function setSplitPayments(?array $splitPayments): self
+    {
+        $this->splitPayments = $splitPayments;
+        return $this;
+    }
+
+    /**
+     * @return FraudAnalysis
+     */
+    public function getFraudAnalysis(): FraudAnalysis
+    {
+        return $this->fraudAnalysis;
+    }
+
+    /**
+     * @param FraudAnalysis $fraudAnalysis
+     * @return Payment
+     */
+    public function setFraudAnalysis(FraudAnalysis $fraudAnalysis): self
+    {
+        $this->fraudAnalysis = $fraudAnalysis;
         return $this;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\AccessToken;
 use Braspag\API\Environment;
 use Braspag\API\Sale;
+use Braspag\Authenticator;
 
 class UpdateSaleRequest extends AbstractRequest
 {
@@ -21,18 +21,24 @@ class UpdateSaleRequest extends AbstractRequest
     private $amount;
 
     /**
+     * @var Authenticator
+     */
+    private $authenticator;
+
+    /**
      * UpdateSaleRequest constructor.
      *
      * @param string $type
-     * @param AccessToken $accessToken
+     * @param Authenticator $authenticator
      * @param Environment $environment
      */
-    public function __construct($type, AccessToken $accessToken, Environment $environment)
+    public function __construct($type, Authenticator $authenticator, Environment $environment)
     {
-        parent::__construct($accessToken);
+        parent::__construct();
 
         $this->environment = $environment;
         $this->type = $type;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -42,7 +48,7 @@ class UpdateSaleRequest extends AbstractRequest
      */
     public function execute($paymentId)
     {
-        $url = $this->environment->getApiUrl() . '1/sales/' . $paymentId . '/' . $this->type;
+        $url = $this->environment->getCieloApiUrl() . '1/sales/' . $paymentId . '/' . $this->type;
         $params = [];
 
         if ($this->amount != null) {

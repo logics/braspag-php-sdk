@@ -2,9 +2,10 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\AccessToken;
 use Braspag\API\Environment;
+use Braspag\API\Payment;
 use Braspag\API\Sale;
+use Braspag\Authenticator;
 
 class CreateSaleRequest extends AbstractRequest
 {
@@ -12,27 +13,38 @@ class CreateSaleRequest extends AbstractRequest
     private $environment;
 
     /**
+     * @var Authenticator
+     */
+    private $auth;
+
+    /**
      * CreateSaleRequest constructor.
      *
-     * @param AccessToken    $accessToken
+     * @param Authenticator    $auth
      * @param Environment $environment
      */
-    public function __construct(AccessToken $accessToken, Environment $environment)
+    public function __construct(Authenticator $auth, Environment $environment)
     {
-        parent::__construct($accessToken);
+        parent::__construct($auth->getAuthenticationHeaders());
 
         $this->environment = $environment;
+        $this->auth = $auth;
     }
 
     /**
-     * @param $sale
+     * @param Sale $sale
      *
      * @return Sale
      * @throws BraspagRequestException
      */
     public function execute($sale)
     {
-        $url = $this->environment->getApiUrl() . '1/sales/';
+        $apiUrl = $sale->getPayment()->getType() == Payment::PAYMENTTYPE_SPLITTED_CARDCARD ?
+            $this->environment->getCieloApiUrl() :
+            $this->environment->getCieloApiUrl()
+        ;
+
+        $url = $apiUrl . '1/sales/';
 
         return $this->sendRequest('POST', $url, $sale);
     }

@@ -2,25 +2,31 @@
 
 namespace Braspag\API\Request;
 
-use Braspag\AccessToken;
 use Braspag\API\Environment;
 use Braspag\API\Sale;
+use Braspag\Authenticator;
 
 class QuerySaleRequest extends AbstractRequest
 {
+    /**
+     * @var Authenticator
+     */
+    private $authenticator;
+
     /** @var Environment $environment */
     private $environment;
 
     /**
      * QuerySaleRequest constructor.
      *
-     * @param AccessToken $accessToken
+     * @param Authenticator $authenticator
      * @param Environment $environment
      */
-    public function __construct(AccessToken $accessToken, Environment $environment)
+    public function __construct(Authenticator $authenticator, Environment $environment)
     {
-        parent::__construct($accessToken);
+        parent::__construct();
 
+        $this->authenticator = $authenticator;
         $this->environment = $environment;
     }
 
@@ -31,7 +37,7 @@ class QuerySaleRequest extends AbstractRequest
      */
     public function execute($paymentId)
     {
-        $url = $this->environment->getApiQueryURL() . '1/sales/' . $paymentId;
+        $url = $this->environment->getCieloApiQueryURL() . '1/sales/' . $paymentId;
 
         return $this->sendRequest('GET', $url);
     }

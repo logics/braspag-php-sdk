@@ -6,7 +6,7 @@
     "license" : "MIT",
     "homepage" : "https://github.com/romeugodoi/braspag-php-sdk",
     "require" : {
-        "php" : "^7.0",
+        "php" : "^7.1",
         "ext-json": "*",
         "ext-curl": "*"
     },
@@ -18,7 +18,8 @@
     ],
     "autoload" : {
         "psr-4" : {
-            "Braspag\\" : "src/Braspag"
+            "Braspag\\" : "src/Braspag",
+            "tests\\" : "tests"
         }
     },
     "require-dev": {

@@ -15,6 +15,8 @@ use Braspag\Authenticator;
  */
 class Braspag
 {
+    private static $instance;
+
     /**
      * @var Authenticator
      */
@@ -44,6 +46,15 @@ class Braspag
         $this->environment = $environment;
     }
 
+    public static function shared(Authenticator $authenticator, Environment $environment = null): self
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self($authenticator, $environment);
+        }
+
+        return self::$instance;
+    }
+
     /**
      * Send the Sale to be created and return the Sale with tid and the status
      * returned by Braspag.
@@ -60,7 +71,7 @@ class Braspag
      */
     public function createSale(Sale $sale)
     {
-        $createSaleRequest = new CreateSaleRequest($this->authenticator->getAccessToken(), $this->environment);
+        $createSaleRequest = new CreateSaleRequest($this->authenticator, $this->environment);
 
         return $createSaleRequest->execute($sale);
     }
@@ -81,7 +92,7 @@ class Braspag
      */
     public function getSale($paymentId)
     {
-        $querySaleRequest = new QuerySaleRequest($this->authenticator->getAccessToken(), $this->environment);
+        $querySaleRequest = new QuerySaleRequest($this->authenticator, $this->environment);
 
         return $querySaleRequest->execute($paymentId);
     }
@@ -104,7 +115,7 @@ class Braspag
     public function getRecurrentPayment($recurrentPaymentId)
     {
         $queryRecurrentPaymentRequest = new QueryRecurrentPaymentRequest(
-            $this->authenticator->getMerchant(),
+            $this->authenticator,
             $this->environment
         );
 
@@ -129,7 +140,7 @@ class Braspag
      */
     public function cancelSale($paymentId, $amount = null)
     {
-        $updateSaleRequest = new UpdateSaleRequest('void', $this->authenticator->getAccessToken(), $this->environment);
+        $updateSaleRequest = new UpdateSaleRequest('void', $this->authenticator, $this->environment);
         $updateSaleRequest->setAmount($amount);
 
         return $updateSaleRequest->execute($paymentId);
@@ -160,7 +171,7 @@ class Braspag
     {
         $updateSaleRequest = new UpdateSaleRequest(
             'capture',
-            $this->authenticator->getAccessToken(),
+            $this->authenticator,
             $this->environment
         );
 
@@ -178,7 +189,7 @@ class Braspag
      */
     public function tokenizeCard(CreditCard $card)
     {
-        $tokenizeCardRequest = new TokenizeCardRequest($this->authenticator->getMerchant(), $this->environment);
+        $tokenizeCardRequest = new TokenizeCardRequest($this->authenticator, $this->environment);
 
         return $tokenizeCardRequest->execute($card);
     }

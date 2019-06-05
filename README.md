@@ -8,8 +8,8 @@ SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https
 ## Recursos
 
 * [x] Tokenização de cartão.
-* [ ] Pagamentos por cartão de crédito.
-    * [ ] Split de pagamentos com regras definidas.
+* [X] Pagamentos por cartão de crédito.
+    * [X] Split de pagamentos com regras definidas.
 * [ ] Consulta de pagamentos.
 * [ ] Pagamentos recorrentes.
     * [ ] Com autorização na primeira recorrência.
@@ -65,10 +65,93 @@ $card->setBrand('Master');
 $auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
 
 // Solicita a tokenização do card
-$card = (new Braspag($auth, Environment::sandbox()))->tokenizeCard($card);
+$card = Braspag::shared($auth, Environment::sandbox())->tokenizeCard($card);
 
 // Get the card token
 $cardToken = $card->getCardToken();
+```
+
+### Split de Pagamento - (Marketplace)
+Caso queira efetivar um pagamento com split transacional:
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Braspag\API\Braspag;
+use Braspag\API\Cart;
+use Braspag\API\CreditCard;
+use Braspag\API\Customer;
+use Braspag\API\Environment;
+use Braspag\API\FraudAnalysis;
+use Braspag\API\Product;
+use Braspag\API\Sale;
+use Braspag\API\SplitPayment;
+use Braspag\Authenticator;
+use Braspag\API\Payment;
+
+$auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
+$auth->authenticate(Environment::sandbox());
+
+// Crie uma instância de Sale informando o ID do pedido na loja
+$sale = new Sale('123');
+
+// Crie uma instância de Customer informando os dados do cliente
+$customer = (new Customer('Teste Accept'))
+    ->setEmail('teste@teste.com.br')
+    ->setIdentity('11111111111')
+    ->setIdentityType('CPF')
+;
+
+$sale->setCustomer($customer);
+
+// Define os Produtos
+$products[] = (new Product())
+    ->setName('Produto Teste')
+    ->setSku('123')
+    ->setQuantity(1)
+    ->setUnitPrice(15700)
+;
+
+$cart = new Cart($products);
+
+// Informa os dados para análise anti-fraude (obrigatório): fingerPrintId, valor e Cart
+$fraudAnalysis = new FraudAnalysis("123456654322", 15700, $cart);
+
+// Defina as regras de split dos subordinados
+$splitPayments = [
+    new SplitPayment('SUBORDINATE_MERCHANT_ID', 15700, 3, 10)
+];
+
+// Crie uma instância de Payment informando o valor do pagamento sem separador de decimais
+$payment = $sale->payment(15700, 1, $splitPayments);
+
+// Informa os dados de análise de fraude
+$payment->setFraudAnalysis($fraudAnalysis);
+
+// Crie uma instância de Credit Card utilizando os dados de teste
+// esses dados estão disponíveis no manual de integração
+$payment->creditCard("123", CreditCard::VISA)
+    ->setExpirationDate("12/2019")
+    ->setCardNumber("0000000000000001")
+    ->setHolder("Teste Accept")
+;
+
+// Configure o SDK com seu merchant e o ambiente apropriado para criar a venda
+$braspag = Braspag::shared($auth, Environment::sandbox());
+
+$sale = $braspag->createSale($sale);
+
+// Com a venda criada na Braspag, já temos o ID do pagamento, TID e demais
+// dados retornados pela Braspag
+$payment = $sale->getPayment();
+
+// Com o Payment você pode verificar o status 
+if ($payment->getStatus() == Payment::STATUS_AUTHORIZED) {
+    // Usar o Payment ID, TID, etc
+    $paymentId = $payment->getPaymentId();
+}
+
 ```
 
 

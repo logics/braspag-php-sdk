@@ -5,12 +5,22 @@ namespace Braspag;
 interface Environment
 {
     /**
-     * @return string the Api URL
+     * @return string the Cielo Api URL
      */
-    public function getApiUrl();
+    public function getCieloApiUrl();
 
     /**
-     * @return string the Api Query URL
+     * @return string the Cielo Api Query URL
      */
-    public function getApiQueryURL();
+    public function getCieloApiQueryURL();
+
+    /**
+     * @return string Api Split URL
+     */
+    public function getSplitApiUrl();
+
+    /**
+     * @return string Api OAuth2 URL
+     */
+    public function getApiAuthUrl();
 }

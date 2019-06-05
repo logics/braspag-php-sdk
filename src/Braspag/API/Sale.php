@@ -5,7 +5,11 @@ namespace Braspag\API;
 class Sale implements BraspagSerializable
 {
     private $merchantOrderId;
+
+    /** @var Customer */
     private $customer;
+
+    /** @var Payment */
     private $payment;
 
     public function __construct($merchantOrderId = null)
@@ -15,7 +19,13 @@ class Sale implements BraspagSerializable
 
     public function jsonSerialize()
     {
-        return array_filter(get_object_vars($this));
+        $array = array_filter(get_object_vars($this));
+        $array = array_combine(
+            array_map('ucfirst', array_keys($array)),
+            array_values($array)
+        );
+
+        return $array;
     }
 
     public function populate(\stdClass $data)
@@ -60,47 +70,76 @@ class Sale implements BraspagSerializable
         return $customer;
     }
 
-    public function payment($amount, $installments = 1)
+    /**
+     * @param int $amount Valor do Pagamento
+     * @param int $installments Número de parcelas
+     * @param null|SplitPayment[] $splitPayments Regras de Split
+     * @return Payment
+     */
+    public function payment($amount, $installments = 1, $splitPayments = null)
     {
-        $payment = new Payment($amount, $installments);
+        $payment = new Payment($amount, $installments, $splitPayments);
+
+        if (!is_null($splitPayments) && count($splitPayments) > 0) {
+            $payment->setType(Payment::PAYMENTTYPE_SPLITTED_CARDCARD);
+        }
+
         $this->setPayment($payment);
 
         return $payment;
     }
 
+    /**
+     * @return mixed
+     */
     public function getMerchantOrderId()
     {
         return $this->merchantOrderId;
     }
 
-    public function setMerchantOrderId($merchantOrderId)
+    /**
+     * @param mixed $merchantOrderId
+     * @return Sale
+     */
+    public function setMerchantOrderId($merchantOrderId): self
     {
         $this->merchantOrderId = $merchantOrderId;
-
         return $this;
     }
 
-    public function getCustomer()
+    /**
+     * @return Customer
+     */
+    public function getCustomer(): Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(Customer $customer)
+    /**
+     * @param Customer $customer
+     * @return Sale
+     */
+    public function setCustomer(Customer $customer): self
     {
         $this->customer = $customer;
-
         return $this;
     }
 
-    public function getPayment()
+    /**
+     * @return Payment
+     */
+    public function getPayment(): Payment
     {
         return $this->payment;
     }
 
-    public function setPayment(Payment $payment)
+    /**
+     * @param Payment $payment
+     * @return Sale
+     */
+    public function setPayment(Payment $payment): self
     {
         $this->payment = $payment;
-
         return $this;
     }
 }

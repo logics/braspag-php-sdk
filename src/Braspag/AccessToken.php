@@ -2,52 +2,78 @@
 
 namespace Braspag;
 
-class AccessToken implements TokenAuthenticable
+class AccessToken implements \JsonSerializable
 {
     /**
      * @var string
      */
-    private $merchantId;
+    private $token;
 
     /**
-     * The Braspag Client Secret
      * @var string
      */
-    private $clientSecret;
+    private $tokenType;
 
     /**
-     * @param string $merchantId    The MerchantID key on Cielo
-     * @param string $clientSecret  The ClientSecret key on Braspag
+     * @var integer
      */
-    public function __construct(string $merchantId, string $clientSecret)
-    {
-        $this->clientSecret = $clientSecret;
-        $this->merchantId = $merchantId;
-    }
+    private $expiresIn;
 
-    public function getAuthenticationHeaders(): array
+    public function populate(\stdClass $data)
     {
-        return [
-            'Authorization: Bearer ' . $this->getTokenBase64(),
-        ];
+        $this->token = isset($data->access_token) ? $data->access_token : null;
+        $this->tokenType = isset($data->token_type) ? $data->token_type : null;
+        $this->expiresIn = isset($data->expires_in) ? $data->expires_in : null;
     }
 
     /**
-     * Returns the result of concatenation with clientId and clientSecret encoded MIME base64
-     * @return string
-     */
-    public function getTokenBase64()
-    {
-        return base64_encode($this->merchantId . $this->clientSecret);
-    }
-
-    /**
-     * Gets the client secret identification on Braspag
+     * @param $json
      *
+     * @return self
+     */
+    public static function fromJson($json)
+    {
+        $object = json_decode($json);
+
+        $accessToken = new AccessToken();
+        $accessToken->populate($object);
+
+        return $accessToken;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        return array_filter(get_object_vars($this));
+    }
+
+    /**
      * @return string
      */
-    public function getClientSecret()
+    public function getToken(): string
     {
-        return $this->clientSecret;
+        return $this->token;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenType(): string
+    {
+        return $this->tokenType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExpiresIn(): int
+    {
+        return $this->expiresIn;
     }
 }

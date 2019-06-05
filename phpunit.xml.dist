@@ -5,17 +5,22 @@
          beStrictAboutChangesToGlobalState="true"
          beStrictAboutOutputDuringTests="true"
          colors="true"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="vendor/autoload.php"
 >
     <testsuites>
-        <testsuite name="Braspag API Test Suite">
-            <directory>./tests/</directory>
+        <testsuite name="BraspagSDK">
+            <directory>./src/Braspag/Tests/Test*.php</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory>./src/</directory>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./src/Braspag/API</directory>
+                <directory>./src/Braspag/Tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
         </whitelist>
     </filter>
 

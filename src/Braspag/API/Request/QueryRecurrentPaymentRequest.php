@@ -4,23 +4,29 @@ namespace Braspag\API\Request;
 
 use Braspag\API\Environment;
 use Braspag\API\RecurrentPayment;
-use Braspag\Merchant;
+use Braspag\Authenticator;
 
 class QueryRecurrentPaymentRequest extends AbstractRequest
 {
+    /**
+     * @var Authenticator
+     */
+    private $authenticator;
+
     private $environment;
 
     /**
      * QueryRecurrentPaymentRequest constructor.
      *
-     * @param Merchant $merchant
+     * @param Authenticator $authenticator
      * @param Environment $environment
      */
-    public function __construct(Merchant $merchant, Environment $environment)
+    public function __construct(Authenticator $authenticator, Environment $environment)
     {
-        parent::__construct($merchant);
+        parent::__construct();
 
         $this->environment = $environment;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -30,7 +36,7 @@ class QueryRecurrentPaymentRequest extends AbstractRequest
      */
     public function execute($recurrentPaymentId)
     {
-        $url = $this->environment->getApiQueryURL() . '1/RecurrentPayment/' . $recurrentPaymentId;
+        $url = $this->environment->getCieloApiQueryURL() . '1/RecurrentPayment/' . $recurrentPaymentId;
 
         return $this->sendRequest('GET', $url);
     }
