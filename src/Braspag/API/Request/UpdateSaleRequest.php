@@ -1,16 +1,25 @@
 <?php
+/**
+ * This is part of Braspag SDK PHP.
+ *
+ * @author: Romeu Godoi <romeu@logics.com.br>
+ * Date: 2019-06-06
+ * Time: 17:31
+ *
+ * @copyright Copyright (C) 2019.
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Braspag\API\Request;
 
 use Braspag\API\Environment;
 use Braspag\API\Payment;
+use Braspag\API\SplitPayment;
 use Braspag\Authenticator;
 
 class UpdateSaleRequest extends AbstractRequest
 {
-    /** @var Environment $environment */
-    private $environment;
-
     /** @var string $type */
     private $type;
 
@@ -20,10 +29,11 @@ class UpdateSaleRequest extends AbstractRequest
     /** @var integer */
     private $amount;
 
-    /**
-     * @var Authenticator
-     */
-    private $authenticator;
+    /** @var SplitPayment[] */
+    private $paymentSplitRules;
+
+    /** @var SplitPayment[] */
+    private $voidSplitPayments;
 
     /**
      * UpdateSaleRequest constructor.
@@ -31,14 +41,13 @@ class UpdateSaleRequest extends AbstractRequest
      * @param string $type
      * @param Authenticator $authenticator
      * @param Environment $environment
+     * @param bool $isSplitCase Informa se as requisições serão ref. a pagamento com split (MarketPlace)
      */
-    public function __construct($type, Authenticator $authenticator, Environment $environment)
+    public function __construct($type, Authenticator $authenticator, Environment $environment, $isSplitCase = false)
     {
-        parent::__construct($authenticator->getAuthenticationHeaders());
+        parent::__construct($authenticator, $environment, $isSplitCase);
 
-        $this->environment = $environment;
         $this->type = $type;
-        $this->authenticator = $authenticator;
     }
 
     /**
@@ -48,10 +57,6 @@ class UpdateSaleRequest extends AbstractRequest
      */
     public function execute($paymentId)
     {
-        if (!$this->authenticator->isAuthenticated()) {
-            $this->authenticator->authenticate($this->environment);
-        }
-
         $url = $this->environment->getCieloApiUrl() . '1/sales/' . $paymentId . '/' . $this->type;
         $params = [];
         $payment = null;
@@ -62,6 +67,16 @@ class UpdateSaleRequest extends AbstractRequest
 
         if ($this->serviceTaxAmount != null) {
             $params['serviceTaxAmount'] = $this->serviceTaxAmount;
+        }
+
+        if ($this->paymentSplitRules != null && $this->isSplitCase) {
+            $payment = new Payment();
+            $payment->setSplitPayments($this->paymentSplitRules);
+        }
+
+        if ($this->voidSplitPayments != null && $this->isSplitCase) {
+            $payment = new Payment();
+            $payment->setVoidSplitPayments($this->voidSplitPayments);
         }
 
         $url .= '?' . http_build_query($params);
@@ -116,6 +131,43 @@ class UpdateSaleRequest extends AbstractRequest
     {
         $this->amount = $amount;
 
+        return $this;
+    }
+
+    /**
+     * @return SplitPayment[]
+     */
+    public function getPaymentSplitRules(): ?array
+    {
+        return $this->paymentSplitRules;
+    }
+
+    /**
+     * @param SplitPayment[] $paymentSplitRules
+     * @return self
+     */
+    public function setPaymentSplitRules(?array $paymentSplitRules): self
+    {
+        $this->paymentSplitRules = $paymentSplitRules;
+
+        return $this;
+    }
+
+    /**
+     * @return SplitPayment[]
+     */
+    public function getVoidSplitPayments(): ?array
+    {
+        return $this->voidSplitPayments;
+    }
+
+    /**
+     * @param SplitPayment[] $voidSplitPayments
+     * @return self
+     */
+    public function setVoidSplitPayments(?array $voidSplitPayments): self
+    {
+        $this->voidSplitPayments = $voidSplitPayments;
         return $this;
     }
 }

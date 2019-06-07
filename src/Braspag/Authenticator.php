@@ -2,13 +2,14 @@
 
 namespace Braspag;
 
-use Braspag\API\Request\AbstractRequest;
+use Braspag\API\Request\BraspagError;
+use Braspag\API\Request\BraspagRequestException;
 
 /**
  * Class Authenticator
  * @package Braspag
  */
-class Authenticator extends AbstractRequest
+class Authenticator
 {
     /**
      * @var string
@@ -48,8 +49,6 @@ class Authenticator extends AbstractRequest
         $this->merchantId = $merchantId;
         $this->merchantKey = $merchantKey;
         $this->merchant = new Merchant($merchantId, $merchantKey);
-
-        parent::__construct();
     }
 
     /**
@@ -61,10 +60,13 @@ class Authenticator extends AbstractRequest
         $this->accessToken = $this->execute($environment);
     }
 
-    public function getAuthenticationHeaders(): array
+    public function getAuthenticationHeaders($isSplitCase = false): array
     {
-        return [
+        return $isSplitCase ? [
             'Authorization: Bearer ' . $this->accessToken->getToken(),
+        ] : [
+            'MerchantId: ' . $this->merchantId,
+            'MerchantKey: ' . $this->merchantKey,
         ];
     }
 
@@ -145,6 +147,41 @@ class Authenticator extends AbstractRequest
         curl_close($curl);
 
         return $this->readResponse($statusCode, $response);
+    }
+
+    /**
+     * @param  $statusCode
+     * @param  $responseBody
+     * @return mixed
+     * @throws BraspagRequestException
+     */
+    protected function readResponse($statusCode, $responseBody)
+    {
+        $unserialized = null;
+
+        switch ($statusCode) {
+            case 200:
+            case 201:
+                $unserialized = $this->unserialize($responseBody);
+                break;
+            case 400:
+                $exception = null;
+                $response = json_decode($responseBody);
+
+                foreach ($response as $error) {
+                    $braspagError = new BraspagError($error->Message, $error->Code);
+                    $exception = new BraspagRequestException('Request Error', $statusCode, $exception);
+                    $exception->setBraspagError($braspagError);
+                }
+
+                throw $exception;
+            case 404:
+                throw new BraspagRequestException('Resource not found', 404, null);
+            default:
+                throw new BraspagRequestException('Unknown status', $statusCode);
+        }
+
+        return $unserialized;
     }
 
     /**

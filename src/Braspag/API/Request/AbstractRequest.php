@@ -2,6 +2,9 @@
 
 namespace Braspag\API\Request;
 
+use Braspag\API\Environment;
+use Braspag\Authenticator;
+
 /**
  * Class AbstractRequest
  *
@@ -12,16 +15,53 @@ abstract class AbstractRequest
     /**
      * @var array
      */
-    private $headers;
+    private $authHeaders = array();
+
+    /**
+     * @var Authenticator
+     */
+    protected $authenticator;
+
+    /**
+     * @var Environment
+     */
+    protected $environment;
+
+    /**
+     * @var bool
+     */
+    protected $isSplitCase;
 
     /**
      * AbstractRequest constructor.
-     *
-     * @param array $headers
+     * @param Authenticator $authenticator
+     * @param Environment $environment
+     * @param bool $isSplitCase Informa se as requisições serão ref. a pagamento com split (MarketPlace)
      */
-    public function __construct(array $headers = array())
+    public function __construct(
+        Authenticator $authenticator,
+        Environment $environment,
+        $isSplitCase = false
+    ) {
+        $this->authenticator = $authenticator;
+        $this->environment = $environment;
+        $this->isSplitCase = $isSplitCase;
+    }
+
+    /**
+     * @throws BraspagRequestException
+     */
+    private function authenticateIfNeeds()
     {
-        $this->headers = $headers;
+        // Se for um caso de split e não estiver autenticado, faz a autenticação guarda os headers necessários
+        if ($this->authenticator->isAuthenticated() == false && $this->isSplitCase) {
+            $this->authenticator->authenticate($this->environment);
+        }
+
+        if ($this->isSplitCase && count($this->authHeaders) == 0) {
+            $authHeaders = $this->authenticator->getAuthenticationHeaders($this->isSplitCase);
+            $this->setAuthHeaders($authHeaders);
+        }
     }
 
     /**
@@ -29,12 +69,6 @@ abstract class AbstractRequest
      * @return mixed
      */
     abstract public function execute($param);
-
-    /**
-     * @param  $json
-     * @return mixed
-     */
-    abstract protected function unserialize($json);
 
     /**
      * @param  $method
@@ -45,12 +79,14 @@ abstract class AbstractRequest
      */
     protected function sendRequest($method, $url, \JsonSerializable $content = null)
     {
+        $this->authenticateIfNeeds();
+
         $headers = array_merge([
             'Accept: application/json',
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
             'RequestId: ' . uniqid(),
-        ], $this->headers);
+        ], $this->authHeaders);
 
         $curl = curl_init($url);
 
@@ -124,5 +160,21 @@ abstract class AbstractRequest
         }
 
         return $unserialized;
+    }
+
+    /**
+     * @param  $json
+     * @return mixed
+     */
+    abstract protected function unserialize($json);
+
+    /**
+     * @param array $authHeaders
+     * @return self
+     */
+    protected function setAuthHeaders(array $authHeaders): self
+    {
+        $this->authHeaders = $authHeaders;
+        return $this;
     }
 }

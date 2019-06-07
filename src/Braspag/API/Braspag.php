@@ -7,7 +7,6 @@ use Braspag\API\Request\QueryRecurrentPaymentRequest;
 use Braspag\API\Request\QuerySaleRequest;
 use Braspag\API\Request\TokenizeCardRequest;
 use Braspag\API\Request\UpdateSaleRequest;
-use Braspag\API\Request\UpdateSplitedSaleRequest;
 use Braspag\Authenticator;
 
 /**
@@ -28,6 +27,9 @@ class Braspag
      */
     private $environment;
 
+    /** @var bool */
+    private $isSplitCase;
+
     /**
      * Create an instance of Braspag choosing the environment where the
      * requests will be send
@@ -36,8 +38,9 @@ class Braspag
      * @param Environment environment
      *            The environment: {@link Environment::production()} or
      *            {@link Environment::sandbox()}
+     * @param bool $isSplitCase
      */
-    public function __construct(Authenticator $authenticator, Environment $environment = null)
+    private function __construct(Authenticator $authenticator, Environment $environment = null, $isSplitCase = false)
     {
         if ($environment == null) {
             $environment = Environment::production();
@@ -45,12 +48,19 @@ class Braspag
 
         $this->authenticator = $authenticator;
         $this->environment = $environment;
+        $this->isSplitCase = $isSplitCase;
     }
 
-    public static function shared(Authenticator $authenticator, Environment $environment = null): self
+    /**
+     * @param Authenticator $authenticator
+     * @param Environment|null $environment
+     * @param bool $isSplitCase
+     * @return Braspag
+     */
+    public static function shared(Authenticator $authenticator, Environment $environment = null, $isSplitCase = false)
     {
         if (!isset(self::$instance)) {
-            self::$instance = new self($authenticator, $environment);
+            self::$instance = new self($authenticator, $environment, $isSplitCase);
         }
 
         return self::$instance;
@@ -72,7 +82,7 @@ class Braspag
      */
     public function createSale(Sale $sale)
     {
-        $createSaleRequest = new CreateSaleRequest($this->authenticator, $this->environment);
+        $createSaleRequest = new CreateSaleRequest($this->authenticator, $this->environment, $this->isSplitCase);
 
         return $createSaleRequest->execute($sale);
     }
@@ -130,6 +140,8 @@ class Braspag
      *            The paymentId to be queried
      * @param integer $amount
      *            Order value in cents
+     * @param SplitPayment[] $voidSplitPayments
+     *            Split rule for partial cancellation
      *
      * @return Payment The canceled returned by Braspag.
      *
@@ -139,11 +151,16 @@ class Braspag
      *      "https://developercielo.github.io/Webservice-3.0/english.html#error-codes">Error
      *      Codes</a>
      */
-    public function cancelSale($paymentId, $amount = null)
+    public function cancelSale($paymentId, $amount = null, $voidSplitPayments = null)
     {
-        $updateSaleRequest = new UpdateSaleRequest('void', $this->authenticator, $this->environment);
+        $updateSaleRequest = new UpdateSaleRequest(
+            'void',
+            $this->authenticator,
+            $this->environment,
+            $this->isSplitCase
+        );
         $updateSaleRequest->setAmount($amount);
-
+        $updateSaleRequest->setVoidSplitPayments($voidSplitPayments);
         return $updateSaleRequest->execute($paymentId);
     }
 
@@ -155,6 +172,8 @@ class Braspag
      *            The paymentId to be captured
      * @param integer $amount
      *            Amount of the authorization to be captured
+     * @param SplitPayment[] $paymentSplitRules
+     *            Split rule for capture, in split cases
      * @param integer $serviceTaxAmount
      *            Amount of the authorization should be destined for the service
      *            charge
@@ -168,51 +187,20 @@ class Braspag
      *      "https://developercielo.github.io/Webservice-3.0/english.html#error-codes">Error
      *      Codes</a>
      */
-    public function captureSale($paymentId, $amount = null, $serviceTaxAmount = null)
+    public function captureSale($paymentId, $amount = null, $paymentSplitRules = null, $serviceTaxAmount = null)
     {
         $updateSaleRequest = new UpdateSaleRequest(
             'capture',
             $this->authenticator,
-            $this->environment
+            $this->environment,
+            $this->isSplitCase
         );
 
         $updateSaleRequest->setAmount($amount);
         $updateSaleRequest->setServiceTaxAmount($serviceTaxAmount);
+        $updateSaleRequest->setPaymentSplitRules($paymentSplitRules);
 
         return $updateSaleRequest->execute($paymentId);
-    }
-
-    /**
-     * Capture a splitted Sale on Braspag by paymentId and specifying the amount and the
-     * serviceTaxAmount
-     *
-     * @param string $paymentId O PaymentId
-     * @param SplitPayment[] $paymentSplitRules
-     *          Regras de Split. Caso as regras não sejam informadas, o Split interpretará que
-     *          o valor total é referente ao próprio Marketplace
-     * @param integer $amount Valor em caso de captura parcial
-     *
-     * @return \Braspag\API\Payment The captured Sale.
-     *
-     *
-     * @throws \Braspag\API\Request\BraspagRequestException if anything gets wrong.
-     *
-     * @see <a href=
-     *      "https://developercielo.github.io/Webservice-3.0/english.html#error-codes">Error
-     *      Codes</a>
-     */
-    public function captureSplittedSale($paymentId, $paymentSplitRules = null, $amount = null)
-    {
-        $updateSplittedSaleRequest = new UpdateSplitedSaleRequest(
-            'capture',
-            $this->authenticator,
-            $this->environment
-        );
-
-        $updateSplittedSaleRequest->setPaymentSplitRules($paymentSplitRules);
-        $updateSplittedSaleRequest->setAmount($amount);
-
-        return $updateSplittedSaleRequest->execute($paymentId);
     }
 
     /**

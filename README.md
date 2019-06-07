@@ -3,13 +3,16 @@
 SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https://github.com/DeveloperCielo/API-3.0-PHP).
 
 [![Latest Stable Version](https://poser.pugx.org/romeugodoi/braspag-php-sdk/v/stable)](https://packagist.org/packages/romeugodoi/braspag-php-sdk)
-[![License](https://poser.pugx.org/romeugodoi/braspag-php-sdk/license)](https://packagist.org/packages/romeugodoi/braspag-php-sdk)
+![PHP from Packagist](https://img.shields.io/packagist/php-v/romeugodoi/braspag-php-sdk.svg)
+[![Coding Standards](https://img.shields.io/badge/cs-PSR--4-orange.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
+![Packagist](https://img.shields.io/packagist/l/romeugodoi/braspag-php-sdk.svg)
 
 ## Recursos
 
 * [x] Tokenização de cartão.
 * [X] Pagamentos por cartão de crédito.
     * [X] Split de pagamentos com regras definidas.
+* [X] Cancelamento de pagamento.
 * [ ] Consulta de pagamentos.
 * [ ] Pagamentos recorrentes.
     * [ ] Com autorização na primeira recorrência.
@@ -17,7 +20,6 @@ SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https
 * [ ] Pagamentos por cartão de débito.
 * [ ] Pagamentos por boleto.
 * [ ] Pagamentos por transferência eletrônica.
-* [ ] Cancelamento de autorização.
 
 
 ## Limitações
@@ -129,7 +131,7 @@ $payment = $sale->payment(15700, 1, $splitPayments);
 // Informa os dados de análise de fraude
 $payment->setFraudAnalysis($fraudAnalysis);
 
-// Você pode definir a captura automatica (abaixo), ou fazê-la depois
+// Você pode definir a captura automatica, ou fazê-la depois
 $payment->setCapture(true);
 
 // Crie uma instância de Credit Card utilizando os dados de teste
@@ -154,7 +156,29 @@ if ($payment->getStatus() == Payment::STATUS_AUTHORIZED) {
     // Usar o Payment ID, TID, etc
     $paymentId = $payment->getPaymentId();
 }
+```
 
+### Cancelamento
+Caso queira efetivar o cancelamento total de um pagamento:
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Braspag\API\Braspag;
+use Braspag\API\Payment;
+use Braspag\API\Environment;
+use Braspag\Authenticator;
+
+
+// Configure os tokens de autenticação (adquiridos junto à Braspag)
+$auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
+
+// Solicita o cancelamento do pagamento informando o PaymentId
+$payment = Braspag::shared($auth, Environment::sandbox())->cancelSale(123304883);
+
+// Verifica se tudo ocorreu bem
+$success = $payment->getStatus() == Payment::STATUS_VOIDED;
 ```
 
 

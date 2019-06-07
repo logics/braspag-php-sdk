@@ -1,10 +1,10 @@
 {
-    "name": "romeugodoi/braspag-php-sdk",
-    "description" : "Integração com a API de pagamentos da Braspag",
+    "name": "logicssoftware/braspag-php-sdk",
+    "description" : "SDK de integração com a API de pagamentos da Braspag",
     "type" : "library",
     "keywords": [],
     "license" : "MIT",
-    "homepage" : "https://github.com/romeugodoi/braspag-php-sdk",
+    "homepage" : "https://github.com/logics/braspag-php-sdk",
     "require" : {
         "php" : "^7.1",
         "ext-json": "*",

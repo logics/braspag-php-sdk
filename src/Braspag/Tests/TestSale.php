@@ -80,7 +80,7 @@ class TestSale extends AuthenthicatedTest
             ;
 
             // Configure o SDK com seu merchant e o ambiente apropriado para criar a venda
-            $braspag = Braspag::shared($auth, Environment::sandbox());
+            $braspag = Braspag::shared($auth, Environment::sandbox(), true);
 
             $sale = $braspag->createSale($sale);
 
@@ -106,12 +106,31 @@ class TestSale extends AuthenthicatedTest
 
             $authenticator = $this->getAuth($env);
 
-            $braspag = Braspag::shared($authenticator, $env);
+            $braspag = Braspag::shared($authenticator, $env, true);
 
-            $payment = $braspag->captureSplittedSale(self::$paymentId, self::$splitPayments);
+            $payment = $braspag->captureSale(self::$paymentId, self::$splitPayments);
 
             $this->assertEquals(Payment::STATUS_PAYMENT_CONFIRMED, $payment->getStatus());
+        } catch (BraspagRequestException $e) {
+            $this->throwException($e);
+        }
+    }
 
+    /**
+     * @depends testCaptureSale
+     */
+    public function testCancelSale()
+    {
+        try {
+            $env = Environment::sandbox();
+
+            $authenticator = $this->getAuth($env);
+
+            $braspag = Braspag::shared($authenticator, $env, true);
+
+            $payment = $braspag->cancelSale(self::$paymentId);
+
+            $this->assertEquals(Payment::STATUS_VOIDED, $payment->getStatus());
         } catch (BraspagRequestException $e) {
             $this->throwException($e);
         }
