@@ -129,6 +129,9 @@ $payment = $sale->payment(15700, 1, $splitPayments);
 // Informa os dados de análise de fraude
 $payment->setFraudAnalysis($fraudAnalysis);
 
+// Você pode definir a captura automatica (abaixo), ou fazê-la depois
+$payment->setCapture(true);
+
 // Crie uma instância de Credit Card utilizando os dados de teste
 // esses dados estão disponíveis no manual de integração
 $payment->creditCard("123", CreditCard::VISA)
