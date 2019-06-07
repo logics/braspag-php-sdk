@@ -24,15 +24,18 @@ use Braspag\API\Product;
 use Braspag\API\Request\BraspagRequestException;
 use Braspag\API\Sale;
 use Braspag\API\SplitPayment;
-use Braspag\Authenticator;
 
 class TestSale extends AuthenthicatedTest
 {
+    private static $paymentId;
+
+    /** @var SplitPayment[] */
+    private static $splitPayments;
+
     public function testSplitSale()
     {
         try {
-            $auth = new Authenticator(self::CLIENT_SECRET, self::MERCHANT_ID, self::MERCHANT_KEY);
-            $auth->authenticate(Environment::sandbox());
+            $auth = $this->getAuth(Environment::sandbox());
 
             // Crie uma instância de Sale informando o ID do pedido na loja
             $sale = new Sale('123');
@@ -58,12 +61,12 @@ class TestSale extends AuthenthicatedTest
             $fraudAnalysis = new FraudAnalysis("123456654322", 15700, $cart);
 
             // Crie a regra de split
-            $splitPayments = [
+            self::$splitPayments = [
                 new SplitPayment(self::SUBORDINATE_MERCHANT_ID, 15700, 3, 10)
             ];
 
             // Crie uma instância de Payment informando o valor do pagamento sem separador de decimais
-            $payment = $sale->payment(15700, 1, $splitPayments);
+            $payment = $sale->payment(15700, 1, self::$splitPayments);
 
             // Informa os dados de análise de fraude
             $payment->setFraudAnalysis($fraudAnalysis);
@@ -84,11 +87,32 @@ class TestSale extends AuthenthicatedTest
             // Com a venda criada na Braspag, já temos o ID do pagamento, TID e demais
             // dados retornados pela Braspag
             $payment = $sale->getPayment();
+            self::$paymentId = $payment->getPaymentId();
 
             $this->assertEquals(Payment::STATUS_AUTHORIZED, $payment->getStatus());
+            $this->assertNotNull(self::$paymentId);
         } catch (BraspagRequestException $e) {
-            // Em caso de erros de integração, podemos tratar o erro aqui.
-            // os códigos de erro estão todos disponíveis no manual de integração.
+            $this->throwException($e);
+        }
+    }
+
+    /**
+     * @depends testSplitSale
+     */
+    public function testCaptureSale()
+    {
+        try {
+            $env = Environment::sandbox();
+
+            $authenticator = $this->getAuth($env);
+
+            $braspag = Braspag::shared($authenticator, $env);
+
+            $payment = $braspag->captureSplittedSale(self::$paymentId, self::$splitPayments);
+
+            $this->assertEquals(Payment::STATUS_PAYMENT_CONFIRMED, $payment->getStatus());
+
+        } catch (BraspagRequestException $e) {
             $this->throwException($e);
         }
     }

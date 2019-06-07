@@ -49,7 +49,7 @@ class Authenticator extends AbstractRequest
         $this->merchantKey = $merchantKey;
         $this->merchant = new Merchant($merchantId, $merchantKey);
 
-        parent::__construct([]);
+        parent::__construct();
     }
 
     /**
@@ -66,15 +66,6 @@ class Authenticator extends AbstractRequest
         return [
             'Authorization: Bearer ' . $this->accessToken->getToken(),
         ];
-    }
-
-    /**
-     * Returns the result of concatenation with clientId and clientSecret encoded MIME base64
-     * @return string
-     */
-    public function getTokenBase64()
-    {
-        return base64_encode($this->merchantId . ':' . $this->clientSecret);
     }
 
     public function isAuthenticated(): bool

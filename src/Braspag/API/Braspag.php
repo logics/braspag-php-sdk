@@ -7,6 +7,7 @@ use Braspag\API\Request\QueryRecurrentPaymentRequest;
 use Braspag\API\Request\QuerySaleRequest;
 use Braspag\API\Request\TokenizeCardRequest;
 use Braspag\API\Request\UpdateSaleRequest;
+use Braspag\API\Request\UpdateSplitedSaleRequest;
 use Braspag\Authenticator;
 
 /**
@@ -130,7 +131,7 @@ class Braspag
      * @param integer $amount
      *            Order value in cents
      *
-     * @return Sale The Sale with authorization, tid, etc. returned by Braspag.
+     * @return Payment The canceled returned by Braspag.
      *
      * @throws \Braspag\API\Request\BraspagRequestException if anything gets wrong.
      *
@@ -158,7 +159,7 @@ class Braspag
      *            Amount of the authorization should be destined for the service
      *            charge
      *
-     * @return \Braspag\API\Sale The captured Sale.
+     * @return \Braspag\API\Payment The captured Sale.
      *
      *
      * @throws \Braspag\API\Request\BraspagRequestException if anything gets wrong.
@@ -179,6 +180,39 @@ class Braspag
         $updateSaleRequest->setServiceTaxAmount($serviceTaxAmount);
 
         return $updateSaleRequest->execute($paymentId);
+    }
+
+    /**
+     * Capture a splitted Sale on Braspag by paymentId and specifying the amount and the
+     * serviceTaxAmount
+     *
+     * @param string $paymentId O PaymentId
+     * @param SplitPayment[] $paymentSplitRules
+     *          Regras de Split. Caso as regras não sejam informadas, o Split interpretará que
+     *          o valor total é referente ao próprio Marketplace
+     * @param integer $amount Valor em caso de captura parcial
+     *
+     * @return \Braspag\API\Payment The captured Sale.
+     *
+     *
+     * @throws \Braspag\API\Request\BraspagRequestException if anything gets wrong.
+     *
+     * @see <a href=
+     *      "https://developercielo.github.io/Webservice-3.0/english.html#error-codes">Error
+     *      Codes</a>
+     */
+    public function captureSplittedSale($paymentId, $paymentSplitRules = null, $amount = null)
+    {
+        $updateSplittedSaleRequest = new UpdateSplitedSaleRequest(
+            'capture',
+            $this->authenticator,
+            $this->environment
+        );
+
+        $updateSplittedSaleRequest->setPaymentSplitRules($paymentSplitRules);
+        $updateSplittedSaleRequest->setAmount($amount);
+
+        return $updateSplittedSaleRequest->execute($paymentId);
     }
 
     /**

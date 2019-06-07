@@ -66,9 +66,16 @@ class Payment implements BraspagSerializable
     private $demonstrative;
     private $identification;
     private $instructions;
+    private $reasonCode;
+    private $reasonMessage;
+    private $providerReturnCode;
+    private $providerReturnMessage;
 
     /** @var SplitPayment[] */
     private $splitPayments;
+
+    /** @var SplitPayment[] */
+    private $voidSplitPayments;
 
     /** @var FraudAnalysis */
     private $fraudAnalysis;
@@ -133,6 +140,16 @@ class Payment implements BraspagSerializable
                 $this->splitPayments[] = $splitPayment;
             }
         }
+        if (isset($data->VoidSplitPayments) && is_array($data->VoidSplitPayments)) {
+            $this->voidSplitPayments = [];
+
+            foreach ($data->VoidSplitPayments as $splitPaymentData) {
+                $splitPayment = new SplitPayment();
+                $splitPayment->populate($splitPaymentData);
+
+                $this->voidSplitPayments[] = $splitPayment;
+            }
+        }
         if (isset($data->FraudAnalysis)) {
             $this->fraudAnalysis = (new FraudAnalysis())->populate($data->FraudAnalysis);
         }
@@ -167,6 +184,10 @@ class Payment implements BraspagSerializable
         $this->demonstrative = isset($data->Demonstrative) ? $data->Demonstrative : null;
         $this->identification = isset($data->Identification) ? $data->Identification : null;
         $this->instructions = isset($data->Instructions) ? $data->Instructions : null;
+        $this->reasonCode = isset($data->ReasonCode) ? $data->ReasonCode : null;
+        $this->reasonMessage = isset($data->ReasonMessage) ? $data->ReasonMessage : null;
+        $this->providerReturnCode = isset($data->ProviderReturnCode) ? $data->ProviderReturnCode : null;
+        $this->providerReturnMessage = isset($data->ProviderReturnMessage) ? $data->ProviderReturnMessage : null;
     }
 
     /**
@@ -305,7 +326,7 @@ class Payment implements BraspagSerializable
     }
 
     /**
-     * @param $capture
+     * @param bool $capture
      *
      * @return $this
      */
@@ -1070,6 +1091,96 @@ class Payment implements BraspagSerializable
     public function setFraudAnalysis(FraudAnalysis $fraudAnalysis): self
     {
         $this->fraudAnalysis = $fraudAnalysis;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReasonCode()
+    {
+        return $this->reasonCode;
+    }
+
+    /**
+     * @param mixed $reasonCode
+     * @return Payment
+     */
+    public function setReasonCode($reasonCode): self
+    {
+        $this->reasonCode = $reasonCode;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReasonMessage()
+    {
+        return $this->reasonMessage;
+    }
+
+    /**
+     * @param mixed $reasonMessage
+     * @return Payment
+     */
+    public function setReasonMessage($reasonMessage): self
+    {
+        $this->reasonMessage = $reasonMessage;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProviderReturnCode()
+    {
+        return $this->providerReturnCode;
+    }
+
+    /**
+     * @param mixed $providerReturnCode
+     * @return Payment
+     */
+    public function setProviderReturnCode($providerReturnCode): self
+    {
+        $this->providerReturnCode = $providerReturnCode;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProviderReturnMessage()
+    {
+        return $this->providerReturnMessage;
+    }
+
+    /**
+     * @param mixed $providerReturnMessage
+     * @return Payment
+     */
+    public function setProviderReturnMessage($providerReturnMessage): self
+    {
+        $this->providerReturnMessage = $providerReturnMessage;
+        return $this;
+    }
+
+    /**
+     * @return SplitPayment[]
+     */
+    public function getVoidSplitPayments(): ?array
+    {
+        return $this->voidSplitPayments;
+    }
+
+    /**
+     * @param SplitPayment[] $voidSplitPayments
+     * @return Payment
+     */
+    public function setVoidSplitPayments(?array $voidSplitPayments): self
+    {
+        $this->voidSplitPayments = $voidSplitPayments;
         return $this;
     }
 }

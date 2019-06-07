@@ -5,7 +5,6 @@ use Braspag\API\Braspag;
 use Braspag\API\CreditCard;
 use Braspag\API\Environment;
 use Braspag\API\Request\BraspagRequestException;
-use Braspag\Authenticator;
 
 class TestCard extends AuthenthicatedTest
 {
@@ -22,8 +21,7 @@ class TestCard extends AuthenthicatedTest
         $card->setExpirationDate('09/2020');
         $card->setBrand('Master');
 
-        $auth = new Authenticator(self::CLIENT_SECRET, self::MERCHANT_ID, self::MERCHANT_KEY);
-
+        $auth = $this->getAuth(Environment::sandbox());
         $card = Braspag::shared($auth, Environment::sandbox())->tokenizeCard($card);
 
         // Get the token

@@ -3,7 +3,7 @@
 namespace Braspag\API\Request;
 
 use Braspag\API\Environment;
-use Braspag\API\Sale;
+use Braspag\API\Payment;
 use Braspag\Authenticator;
 
 class UpdateSaleRequest extends AbstractRequest
@@ -34,7 +34,7 @@ class UpdateSaleRequest extends AbstractRequest
      */
     public function __construct($type, Authenticator $authenticator, Environment $environment)
     {
-        parent::__construct();
+        parent::__construct($authenticator->getAuthenticationHeaders());
 
         $this->environment = $environment;
         $this->type = $type;
@@ -43,13 +43,18 @@ class UpdateSaleRequest extends AbstractRequest
 
     /**
      * @param $paymentId
-     * @return Sale
+     * @return Payment
      * @throws BraspagRequestException
      */
     public function execute($paymentId)
     {
+        if (!$this->authenticator->isAuthenticated()) {
+            $this->authenticator->authenticate($this->environment);
+        }
+
         $url = $this->environment->getCieloApiUrl() . '1/sales/' . $paymentId . '/' . $this->type;
         $params = [];
+        $payment = null;
 
         if ($this->amount != null) {
             $params['amount'] = $this->amount;
@@ -61,17 +66,17 @@ class UpdateSaleRequest extends AbstractRequest
 
         $url .= '?' . http_build_query($params);
 
-        return $this->sendRequest('PUT', $url);
+        return $this->sendRequest('PUT', $url, $payment);
     }
 
     /**
      * @param $json
      *
-     * @return Sale
+     * @return Payment
      */
     protected function unserialize($json)
     {
-        return Sale::fromJson($json);
+        return Payment::fromJson($json);
     }
 
     /**

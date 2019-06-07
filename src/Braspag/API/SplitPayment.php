@@ -45,6 +45,12 @@ class SplitPayment implements BraspagSerializable
     private $splits;
 
     /**
+     * Geralmente preenchido no retorno da API
+     * @var Split[]
+     */
+    private $voidedSplits;
+
+    /**
      * SplitPayment constructor.
      * @param string|null $subordinateMerchantId  MerchantId (Identificador) do Subordinado.
      * @param int $amount Parte do valor total da transação referente a participação do Subordinado, em centavos.
@@ -78,6 +84,16 @@ class SplitPayment implements BraspagSerializable
                 $split = new Split();
                 $split->populate($splitData);
                 $this->splits[] = $split;
+            }
+        }
+
+        if (isset($data->VoidedSplits) && is_array($data->VoidedSplits)) {
+            $this->voidedSplits = [];
+
+            foreach ($data->VoidedSplits as $splitData) {
+                $split = new Split();
+                $split->populate($splitData);
+                $this->voidedSplits[] = $split;
             }
         }
     }
@@ -156,6 +172,24 @@ class SplitPayment implements BraspagSerializable
     public function setSplits(?array $splits): self
     {
         $this->splits = $splits;
+        return $this;
+    }
+
+    /**
+     * @return Split[]
+     */
+    public function getVoidedSplits(): ?array
+    {
+        return $this->voidedSplits;
+    }
+
+    /**
+     * @param Split[] $voidedSplits
+     * @return SplitPayment
+     */
+    public function setVoidedSplits(?array $voidedSplits): self
+    {
+        $this->voidedSplits = $voidedSplits;
         return $this;
     }
 }

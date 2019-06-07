@@ -13,6 +13,8 @@
 
 namespace Braspag\Tests;
 
+use Braspag\API\Environment;
+use Braspag\Authenticator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -30,4 +32,21 @@ abstract class AuthenthicatedTest extends TestCase
 
     const SUBORDINATE_MERCHANT_ID = '66e7caad-5132-4e9c-ab11-35167ac261f8';
     const SUBORDINATE_MERCHANT_ID_2 = '3bd84c9c-0b55-47d2-b042-478990aa0dd3';
+
+    private static $auth;
+
+    /**
+     * @param Environment $environment
+     * @return Authenticator
+     * @throws \Braspag\API\Request\BraspagRequestException
+     */
+    protected function getAuth(Environment $environment): Authenticator
+    {
+        if (!isset(self::$auth)) {
+            self::$auth = new Authenticator(self::CLIENT_SECRET, self::MERCHANT_ID, self::MERCHANT_KEY);
+            self::$auth->authenticate($environment);
+        }
+
+        return self::$auth;
+    }
 }
