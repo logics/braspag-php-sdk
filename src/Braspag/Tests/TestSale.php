@@ -91,6 +91,9 @@ class TestSale extends AuthenthicatedTest
 
             $this->assertEquals(Payment::STATUS_AUTHORIZED, $payment->getStatus());
             $this->assertNotNull(self::$paymentId);
+            $this->assertEquals(true, $payment->isSplitted());
+            $this->assertGreaterThan(0, count($payment->getSplitPayments()));
+            $this->assertNotNull($payment->getSplitPayments()[0]->getSubordinateMerchantId());
         } catch (BraspagRequestException $e) {
             $this->throwException($e);
         }
@@ -118,6 +121,28 @@ class TestSale extends AuthenthicatedTest
 
     /**
      * @depends testCaptureSale
+     */
+    public function testGetSale()
+    {
+        try {
+            $env = Environment::sandbox();
+
+            $authenticator = $this->getAuth($env);
+
+            $braspag = Braspag::shared($authenticator, $env, true);
+
+            $sale = $braspag->getSale(self::$paymentId);
+
+            $this->assertNotNull($sale);
+            $this->assertInstanceOf(Sale::class, $sale);
+            $this->assertInstanceOf(Payment::class, $sale->getPayment());
+        } catch (BraspagRequestException $e) {
+            $this->throwException($e);
+        }
+    }
+
+    /**
+     * @depends testGetSale
      */
     public function testCancelSale()
     {

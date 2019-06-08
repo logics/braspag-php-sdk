@@ -71,6 +71,9 @@ class Payment implements BraspagSerializable
     private $providerReturnCode;
     private $providerReturnMessage;
 
+    /** @var bool */
+    private $isSplitted;
+
     /** @var SplitPayment[] */
     private $splitPayments;
 
@@ -134,10 +137,10 @@ class Payment implements BraspagSerializable
             $this->splitPayments = [];
 
             foreach ($data->SplitPayments as $splitPaymentData) {
-                $splitPayment = new SplitPayment();
-                $splitPayment->populate($splitPaymentData);
+                $splitPay = new SplitPayment();
+                $splitPay->populate($splitPaymentData);
 
-                $this->splitPayments[] = $splitPayment;
+                $this->splitPayments[] = $splitPay;
             }
         }
         if (isset($data->VoidSplitPayments) && is_array($data->VoidSplitPayments)) {
@@ -188,6 +191,7 @@ class Payment implements BraspagSerializable
         $this->reasonMessage = isset($data->ReasonMessage) ? $data->ReasonMessage : null;
         $this->providerReturnCode = isset($data->ProviderReturnCode) ? $data->ProviderReturnCode : null;
         $this->providerReturnMessage = isset($data->ProviderReturnMessage) ? $data->ProviderReturnMessage : null;
+        $this->isSplitted = isset($data->IsSplitted) ? $data->IsSplitted : null;
     }
 
     /**
@@ -1181,6 +1185,24 @@ class Payment implements BraspagSerializable
     public function setVoidSplitPayments(?array $voidSplitPayments): self
     {
         $this->voidSplitPayments = $voidSplitPayments;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSplitted(): bool
+    {
+        return $this->isSplitted;
+    }
+
+    /**
+     * @param bool $isSplitted
+     * @return Payment
+     */
+    public function setIsSplitted(bool $isSplitted): self
+    {
+        $this->isSplitted = $isSplitted;
         return $this;
     }
 }

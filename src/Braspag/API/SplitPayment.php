@@ -74,7 +74,7 @@ class SplitPayment implements BraspagSerializable
 
         if (isset($data->Fares)) {
             $this->fares = new Fares();
-            $this->populate($data->Fares);
+            $this->fares->populate($data->Fares);
         }
 
         if (isset($data->Splits) && is_array($data->Splits)) {

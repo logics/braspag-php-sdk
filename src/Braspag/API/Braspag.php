@@ -103,7 +103,7 @@ class Braspag
      */
     public function getSale($paymentId)
     {
-        $querySaleRequest = new QuerySaleRequest($this->authenticator, $this->environment);
+        $querySaleRequest = new QuerySaleRequest($this->authenticator, $this->environment, $this->isSplitCase);
 
         return $querySaleRequest->execute($paymentId);
     }

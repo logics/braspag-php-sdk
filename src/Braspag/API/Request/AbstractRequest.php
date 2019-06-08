@@ -58,9 +58,9 @@ abstract class AbstractRequest
             $this->authenticator->authenticate($this->environment);
         }
 
-        if ($this->isSplitCase && count($this->authHeaders) == 0) {
-            $authHeaders = $this->authenticator->getAuthenticationHeaders($this->isSplitCase);
-            $this->setAuthHeaders($authHeaders);
+        if (count($this->authHeaders) == 0) {
+            $this->authHeaders = $this->authenticator->getAuthenticationHeaders(false);
+//            $this->authHeaders = $this->authenticator->getAuthenticationHeaders($this->isSplitCase);
         }
     }
 
