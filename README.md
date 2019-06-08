@@ -1,6 +1,6 @@
 # Braspag SDK PHP
 
-SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https://github.com/DeveloperCielo/API-3.0-PHP).
+SDK de integração com a API da Braspag. 
 
 [![Latest Stable Version](https://poser.pugx.org/logicssoftware/braspag-php-sdk/v/stable)](https://packagist.org/packages/logicssoftware/braspag-php-sdk)
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/logicssoftware/braspag-php-sdk.svg)
@@ -8,6 +8,9 @@ SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https
 ![Packagist](https://img.shields.io/packagist/l/logicssoftware/braspag-php-sdk.svg)
 
 ## Recursos
+Este SDK contempla os produtos: `Pagador` (sem split de pagamentos) e `Marketplace` (com split de pagamentos).
+
+#### Recursos testados:
 
 * [x] Tokenização de cartão.
 * [X] Pagamentos por cartão de crédito.
@@ -22,9 +25,9 @@ SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https
 * [ ] Pagamentos por transferência eletrônica.
 
 
-## Limitações
+## Observações
 
-Nos casos onde é necessário a autenticação ou qualquer tipo de redirecionamento do usuário, 
+Nos casos onde é necessário qualquer tipo de redirecionamento do usuário, 
 o desenvolvedor deverá utilizar o SDK para gerar o pagamento e, com o link retornado pela Braspag, 
 providenciar o redirecionamento do usuário.
 
@@ -169,7 +172,6 @@ use Braspag\API\Braspag;
 use Braspag\API\Environment;
 use Braspag\Authenticator;
 
-
 // Configure os tokens de autenticação (adquiridos junto à Braspag)
 $auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
 
@@ -189,7 +191,6 @@ use Braspag\API\Braspag;
 use Braspag\API\Payment;
 use Braspag\API\Environment;
 use Braspag\Authenticator;
-
 
 // Configure os tokens de autenticação (adquiridos junto à Braspag)
 $auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
@@ -218,4 +219,7 @@ $success = $payment->getStatus() == Payment::STATUS_VOIDED;
 
 ## Manual
 
-Para mais informações sobre a integração com a API da Braspag, vide o manual em: [Split de Pagamentos](https://braspag.github.io/manual/split-pagamentos-braspag)
+Para mais informações sobre a integração com a API da Braspag, vide o manual em: [Split de Pagamentos](https://braspag.github.io/manual/split-pagamentos-braspag) | [Pagador](https://braspag.github.io/manual/braspag-pagador)
+
+##
+Inspired by [Cielo SDK](https://github.com/DeveloperCielo/API-3.0-PHP).

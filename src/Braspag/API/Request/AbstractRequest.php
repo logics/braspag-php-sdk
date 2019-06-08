@@ -59,8 +59,7 @@ abstract class AbstractRequest
         }
 
         if (count($this->authHeaders) == 0) {
-            $this->authHeaders = $this->authenticator->getAuthenticationHeaders(false);
-//            $this->authHeaders = $this->authenticator->getAuthenticationHeaders($this->isSplitCase);
+            $this->authHeaders = $this->authenticator->getAuthenticationHeaders($this->isSplitCase);
         }
     }
 
