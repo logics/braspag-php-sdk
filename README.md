@@ -12,8 +12,8 @@ SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https
 * [x] Tokenização de cartão.
 * [X] Pagamentos por cartão de crédito.
     * [X] Split de pagamentos com regras definidas.
+* [X] Consulta de pagamentos.
 * [X] Cancelamento de pagamento.
-* [ ] Consulta de pagamentos.
 * [ ] Pagamentos recorrentes.
     * [ ] Com autorização na primeira recorrência.
     * [ ] Com autorização a partir da primeira recorrência.
@@ -158,7 +158,27 @@ if ($payment->getStatus() == Payment::STATUS_AUTHORIZED) {
 }
 ```
 
-### Cancelamento
+### Consulta de pagamentos
+Caso queira buscar uma venda para pegar os dados de um pagamento direto na Braspag:
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Braspag\API\Braspag;
+use Braspag\API\Environment;
+use Braspag\Authenticator;
+
+
+// Configure os tokens de autenticação (adquiridos junto à Braspag)
+$auth = new Authenticator('CLIENT_SECRET', 'MERCHANT_ID', 'MERCHANT_KEY');
+
+// Consulta a venda informando o PaymentId
+$sale = Braspag::shared($auth, Environment::sandbox())->getSale(123304883);
+$payment = $sale->getPayment();
+```
+
+### Cancelamento de pagamento
 Caso queira efetivar o cancelamento total de um pagamento:
 
 ```php
