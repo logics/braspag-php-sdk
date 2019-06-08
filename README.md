@@ -2,10 +2,10 @@
 
 SDK de integração com a API da Braspag, inspirado no SDK Cielo [API-3.0](https://github.com/DeveloperCielo/API-3.0-PHP).
 
-[![Latest Stable Version](https://poser.pugx.org/romeugodoi/braspag-php-sdk/v/stable)](https://packagist.org/packages/romeugodoi/braspag-php-sdk)
-![PHP from Packagist](https://img.shields.io/packagist/php-v/romeugodoi/braspag-php-sdk.svg)
+[![Latest Stable Version](https://poser.pugx.org/logicssoftware/braspag-php-sdk/v/stable)](https://packagist.org/packages/logicssoftware/braspag-php-sdk)
+![PHP from Packagist](https://img.shields.io/packagist/php-v/logicssoftware/braspag-php-sdk.svg)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--4-orange.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
-![Packagist](https://img.shields.io/packagist/l/romeugodoi/braspag-php-sdk.svg)
+![Packagist](https://img.shields.io/packagist/l/logicssoftware/braspag-php-sdk.svg)
 
 ## Recursos
 
