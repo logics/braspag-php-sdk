@@ -15,7 +15,7 @@ abstract class AbstractRequest
     /**
      * @var array
      */
-    private $authHeaders = array();
+    private $authHeaders = [];
 
     /**
      * @var Authenticator

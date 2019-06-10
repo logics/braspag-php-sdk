@@ -2,7 +2,7 @@
     "name": "logicssoftware/braspag-php-sdk",
     "description" : "SDK de integração com a API de pagamentos da Braspag",
     "type" : "library",
-    "keywords": [],
+    "keywords": ["sdk", "payment", "php", "marketplace", "split", "braspag", "cielo"],
     "license" : "MIT",
     "homepage" : "https://github.com/logics/braspag-php-sdk",
     "require" : {
@@ -18,8 +18,7 @@
     ],
     "autoload" : {
         "psr-4" : {
-            "Braspag\\" : "src/Braspag",
-            "tests\\" : "tests"
+            "Braspag\\" : "src/Braspag"
         }
     },
     "require-dev": {

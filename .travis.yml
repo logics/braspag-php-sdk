@@ -7,7 +7,7 @@ php:
 install:
     - composer install
 
-script: vendor/bin/phpunit --coverage-text
+script: composer test
 
 notifications:
     email:
