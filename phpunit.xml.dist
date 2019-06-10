@@ -9,7 +9,8 @@
 >
     <testsuites>
         <testsuite name="BraspagSDK">
-            <directory>./src/Braspag/Tests/Test*.php</directory>
+            <file>./src/Braspag/Tests/TestCard.php</file>
+            <file>./src/Braspag/Tests/TestSale.php</file>
         </testsuite>
     </testsuites>
 
