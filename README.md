@@ -8,15 +8,15 @@ SDK de integração com a API da Braspag.
 ![Packagist](https://img.shields.io/packagist/l/logicssoftware/braspag-php-sdk.svg)
 
 ## Recursos
-Este SDK contempla os produtos: `Pagador` (sem split de pagamentos) e `Marketplace` (com split de pagamentos).
+Este SDK contempla tanto o modelo de pagamento com split (`Marketplace`), quanto o pagamento direto.
 
 #### Recursos testados:
 
-* [x] Tokenização de cartão.
-* [X] Pagamentos por cartão de crédito.
-    * [X] Split de pagamentos com regras definidas.
-* [X] Consulta de pagamentos.
-* [X] Cancelamento de pagamento.
+* [x] [Tokenização de cartão](#card-tokenization).
+* [X] [Pagamentos por cartão de crédito](#split-de-pagamentos---marketplace).
+    * [X] [Split de pagamentos com regras definidas](#split-de-pagamentos---marketplace).
+* [X] [Consulta de pagamentos](#consulta-de-pagamentos).
+* [X] [Cancelamento de pagamento](#cancelamento-de-pagamento).
 * [ ] Pagamentos recorrentes.
     * [ ] Com autorização na primeira recorrência.
     * [ ] Com autorização a partir da primeira recorrência.
@@ -33,7 +33,7 @@ providenciar o redirecionamento do usuário.
 
 ## Dependências
 
-* PHP >= 7.0
+* PHP >= 7.1
 
 ## Instalando o SDK
 Caso ainda não possua o Composer instalado, siga as instruções em [getcomposer.org](https://getcomposer.org).
@@ -46,8 +46,8 @@ composer require "romeugodoi/braspag-php-sdk"
 
 ## Exemplos de uso
 
-### Tokenização de cartão:
-Caso não queira guardar os dados sensíveis do cartão, você pode gerar um token dele para uso nas transações:
+### Card Tokenization:
+Caso não queira guardar os dados sensíveis do cartão, e evitar ter que implementar uma PCI Compliance, você pode gerar um token do cartão para usar posteriormente nas transações:
 
 ```php
 <?php
@@ -76,7 +76,7 @@ $card = Braspag::shared($auth, Environment::sandbox())->tokenizeCard($card);
 $cardToken = $card->getCardToken();
 ```
 
-### Split de Pagamento - (Marketplace)
+### Split de Pagamentos - (Marketplace)
 Caso queira efetivar um pagamento com split transacional:
 
 ```php
