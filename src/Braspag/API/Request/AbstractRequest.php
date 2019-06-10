@@ -155,6 +155,7 @@ abstract class AbstractRequest
             case 404:
                 throw new BraspagRequestException('Resource not found', 404, null);
             default:
+                var_dump(json_decode($responseBody));
                 throw new BraspagRequestException('Unknown status', $statusCode);
         }
 
