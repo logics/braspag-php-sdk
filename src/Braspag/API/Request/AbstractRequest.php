@@ -135,7 +135,7 @@ abstract class AbstractRequest
     protected function readResponse($statusCode, $responseBody)
     {
         $unserialized = null;
-
+        throw new BraspagRequestException('Unknown status' . $responseBody, $statusCode);
         switch ($statusCode) {
             case 200:
             case 201:
@@ -155,8 +155,7 @@ abstract class AbstractRequest
             case 404:
                 throw new BraspagRequestException('Resource not found', 404, null);
             default:
-                var_dump(json_decode($responseBody));
-                throw new BraspagRequestException('Unknown status', $statusCode);
+                throw new BraspagRequestException('Unknown status' . $responseBody, $statusCode);
         }
 
         return $unserialized;
