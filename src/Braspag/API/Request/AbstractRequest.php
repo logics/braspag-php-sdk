@@ -90,7 +90,7 @@ abstract class AbstractRequest
         $curl = curl_init($url);
 
         curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 
         switch ($method) {
             case 'GET':
@@ -135,7 +135,7 @@ abstract class AbstractRequest
     protected function readResponse($statusCode, $responseBody)
     {
         $unserialized = null;
-        throw new BraspagRequestException('Unknown status' . $responseBody, $statusCode);
+
         switch ($statusCode) {
             case 200:
             case 201:
@@ -155,7 +155,7 @@ abstract class AbstractRequest
             case 404:
                 throw new BraspagRequestException('Resource not found', 404, null);
             default:
-                throw new BraspagRequestException('Unknown status' . $responseBody, $statusCode);
+                throw new BraspagRequestException('Unknown status', $statusCode);
         }
 
         return $unserialized;
