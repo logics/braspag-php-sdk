@@ -12,4 +12,8 @@ before_script: php -m
 script: composer test
 
 notifications:
-    email: false
+    email:
+        recipients:
+            - dev@logics.com.br
+        on_success: never
+        on_failure: always
