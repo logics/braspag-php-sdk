@@ -12,5 +12,4 @@ before_script: php -m
 script: composer test
 
 notifications:
-    email:
-        - dev@logics.com.br
+    email: false

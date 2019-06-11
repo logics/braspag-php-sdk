@@ -79,76 +79,72 @@ class CreditCard implements BraspagSerializable
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCardNumber()
+    public function getCardNumber(): string
     {
         return $this->cardNumber;
     }
 
     /**
-     * @param $cardNumber
-     *
-     * @return $this
+     * @param string $cardNumber
+     * @return CreditCard
      */
-    public function setCardNumber($cardNumber)
+    public function setCardNumber(string $cardNumber): self
     {
         $this->cardNumber = $cardNumber;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getHolder()
+    public function getHolder(): string
     {
         return $this->holder;
     }
 
     /**
-     * @param $holder
-     *
-     * @return $this
+     * @param string $holder
+     * @return CreditCard
      */
-    public function setHolder($holder)
+    public function setHolder(string $holder): self
     {
         $this->holder = $holder;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getExpirationDate()
+    public function getExpirationDate(): string
     {
         return $this->expirationDate;
     }
 
     /**
-     * @param $expirationDate
-     *
-     * @return $this
+     * @param string $expirationDate
+     * @return CreditCard
      */
-    public function setExpirationDate($expirationDate)
+    public function setExpirationDate(string $expirationDate): self
     {
         $this->expirationDate = $expirationDate;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSecurityCode()
+    public function getSecurityCode(): string
     {
         return $this->securityCode;
     }
 
     /**
-     * @param $securityCode
-     *
-     * @return $this
+     * @param string $securityCode
+     * @return CreditCard
      */
-    public function setSecurityCode($securityCode)
+    public function setSecurityCode(string $securityCode): self
     {
         $this->securityCode = $securityCode;
         return $this;
@@ -157,55 +153,52 @@ class CreditCard implements BraspagSerializable
     /**
      * @return bool
      */
-    public function getSaveCard()
+    public function isSaveCard(): bool
     {
         return $this->saveCard;
     }
 
     /**
-     * @param $saveCard
-     *
-     * @return $this
+     * @param bool $saveCard
+     * @return CreditCard
      */
-    public function setSaveCard($saveCard)
+    public function setSaveCard(bool $saveCard): self
     {
         $this->saveCard = $saveCard;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getBrand()
+    public function getBrand(): string
     {
         return $this->brand;
     }
 
     /**
-     * @param $brand
-     *
-     * @return $this
+     * @param string $brand
+     * @return CreditCard
      */
-    public function setBrand($brand)
+    public function setBrand(string $brand): self
     {
         $this->brand = $brand;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCardToken()
+    public function getCardToken(): string
     {
         return $this->cardToken;
     }
 
     /**
-     * @param $cardToken
-     *
-     * @return $this
+     * @param string $cardToken
+     * @return CreditCard
      */
-    public function setCardToken($cardToken)
+    public function setCardToken(string $cardToken): self
     {
         $this->cardToken = $cardToken;
         return $this;
@@ -214,32 +207,36 @@ class CreditCard implements BraspagSerializable
     /**
      * @return string
      */
-    public function getCustomerName()
+    public function getCustomerName(): string
     {
         return $this->customerName;
     }
 
     /**
      * @param string $customerName
+     * @return CreditCard
      */
-    public function setCustomerName($customerName)
+    public function setCustomerName(string $customerName): self
     {
         $this->customerName = $customerName;
+        return $this;
     }
 
     /**
      * @return \stdClass
      */
-    public function getLinks()
+    public function getLinks(): \stdClass
     {
         return $this->links;
     }
 
     /**
      * @param \stdClass $links
+     * @return CreditCard
      */
-    public function setLinks($links)
+    public function setLinks(\stdClass $links): self
     {
         $this->links = $links;
+        return $this;
     }
 }
