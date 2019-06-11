@@ -5,7 +5,8 @@ SDK de integração com a API da Braspag.
 [![Latest Stable Version](https://poser.pugx.org/logicssoftware/braspag-php-sdk/v/stable)](https://packagist.org/packages/logicssoftware/braspag-php-sdk)
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/logicssoftware/braspag-php-sdk.svg)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--4-orange.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
-![Packagist](https://img.shields.io/packagist/l/logicssoftware/braspag-php-sdk.svg)
+![Packagist](https://img.shields.io/packagist/l/logicssoftware/braspag-php-sdk.svg?color=yellow)
+![Travis (.org) branch](https://img.shields.io/travis/logics/braspag-php-sdk/master.svg)
 
 ## Recursos
 Este SDK contempla tanto o modelo de pagamento com split (`Marketplace`), quanto o pagamento direto.
