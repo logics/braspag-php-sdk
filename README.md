@@ -28,9 +28,13 @@ Este SDK contempla tanto o modelo de pagamento com split (`Marketplace`), quanto
 
 ## Observações
 
-Nos casos onde é necessário qualquer tipo de redirecionamento do usuário, 
+Caso seha necessário qualquer tipo de redirecionamento do usuário, 
 o desenvolvedor deverá utilizar o SDK para gerar o pagamento e, com o link retornado pela Braspag, 
 providenciar o redirecionamento do usuário.
+
+Algumas funcionalidades ainda não foram testadas, por isso ainda não estão marcadas em [`Recursos`](#recursos).
+
+Disposto a ajudar? Faça um fork e envie um pull request com testes e build ok.  
 
 ## Dependências
 
@@ -42,7 +46,7 @@ Caso ainda não possua o Composer instalado, siga as instruções em [getcompose
 Se já possui um arquivo `composer.json`, basta executar diretamente em seu terminal:
 
 ```
-composer require "romeugodoi/braspag-php-sdk"
+composer require "logicssoftware/braspag-php-sdk"
 ```
 
 ## Exemplos de uso
