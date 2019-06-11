@@ -84,7 +84,6 @@ abstract class AbstractRequest
             'Accept: application/json',
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
-            'RequestId: ' . uniqid(),
         ], $this->authHeaders);
 
         $curl = curl_init($url);

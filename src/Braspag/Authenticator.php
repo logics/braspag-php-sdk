@@ -120,7 +120,6 @@ class Authenticator
             'Content-Type: application/x-www-form-urlencoded',
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
-            'RequestId: ' . uniqid(),
         ];
 
         curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
