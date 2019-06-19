@@ -63,7 +63,7 @@ class Authenticator
     public function getAuthenticationHeaders($isSplitCase = false): array
     {
         return $isSplitCase ? [
-            'Authorization: Bearer ' . $this->accessToken->getToken(),
+            'Authorization: Bearer ' . ($this->accessToken != null ? $this->accessToken->getToken() : ''),
         ] : [
             'MerchantId: ' . $this->merchantId,
             'MerchantKey: ' . $this->merchantKey,
