@@ -35,7 +35,7 @@ class TestSale extends AuthenthicatedTest
     public function testSplitSale()
     {
         try {
-            $auth = $this->getAuth(Environment::sandbox());
+            $auth = $this->getAuth();
 
             // Crie uma instância de Sale informando o ID do pedido na loja
             $sale = new Sale('123');
@@ -107,7 +107,7 @@ class TestSale extends AuthenthicatedTest
         try {
             $env = Environment::sandbox();
 
-            $authenticator = $this->getAuth($env);
+            $authenticator = $this->getAuth();
 
             $braspag = Braspag::shared($authenticator, $env, true);
 
@@ -127,7 +127,7 @@ class TestSale extends AuthenthicatedTest
         try {
             $env = Environment::sandbox();
 
-            $authenticator = $this->getAuth($env);
+            $authenticator = $this->getAuth();
 
             $braspag = Braspag::shared($authenticator, $env, true);
 
@@ -149,7 +149,7 @@ class TestSale extends AuthenthicatedTest
         try {
             $env = Environment::sandbox();
 
-            $authenticator = $this->getAuth($env);
+            $authenticator = $this->getAuth();
 
             $braspag = Braspag::shared($authenticator, $env, true);
 

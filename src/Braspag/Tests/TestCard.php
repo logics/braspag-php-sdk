@@ -21,7 +21,7 @@ class TestCard extends AuthenthicatedTest
         $card->setExpirationDate('09/2020');
         $card->setBrand('Master');
 
-        $auth = $this->getAuth(Environment::sandbox());
+        $auth = $this->getAuth();
         $card = Braspag::shared($auth, Environment::sandbox())->tokenizeCard($card);
 
         // Get the token

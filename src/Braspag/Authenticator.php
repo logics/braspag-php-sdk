@@ -72,7 +72,7 @@ class Authenticator
 
     public function isAuthenticated(): bool
     {
-        return !is_null($this->accessToken->getToken());
+        return $this->accessToken != null && !is_null($this->accessToken->getToken());
     }
 
     /**

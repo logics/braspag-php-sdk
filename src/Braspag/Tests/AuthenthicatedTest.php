@@ -13,7 +13,6 @@
 
 namespace Braspag\Tests;
 
-use Braspag\API\Environment;
 use Braspag\Authenticator;
 use PHPUnit\Framework\TestCase;
 
@@ -36,15 +35,12 @@ abstract class AuthenthicatedTest extends TestCase
     private static $auth;
 
     /**
-     * @param Environment $environment
      * @return Authenticator
-     * @throws \Braspag\API\Request\BraspagRequestException
      */
-    protected function getAuth(Environment $environment): Authenticator
+    protected function getAuth(): Authenticator
     {
         if (!isset(self::$auth)) {
             self::$auth = new Authenticator(self::CLIENT_SECRET, self::MERCHANT_ID, self::MERCHANT_KEY);
-            self::$auth->authenticate($environment);
         }
 
         return self::$auth;
