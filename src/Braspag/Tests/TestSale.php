@@ -111,7 +111,7 @@ class TestSale extends AuthenthicatedTest
 
             $braspag = Braspag::shared($authenticator, $env, true);
 
-            $payment = $braspag->captureSale(self::$paymentId, self::$splitPayments);
+            $payment = $braspag->captureSale(self::$paymentId, 15700, self::$splitPayments);
 
             $this->assertEquals(Payment::STATUS_PAYMENT_CONFIRMED, $payment->getStatus());
         } catch (BraspagRequestException $e) {
