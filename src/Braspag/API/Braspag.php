@@ -187,7 +187,7 @@ class Braspag
      *      "https://developercielo.github.io/Webservice-3.0/english.html#error-codes">Error
      *      Codes</a>
      */
-    public function captureSale($paymentId, $amount = null, $paymentSplitRules = null, $serviceTaxAmount = null)
+    public function captureSale($paymentId, $amount = null, array $paymentSplitRules = null, $serviceTaxAmount = null)
     {
         $updateSaleRequest = new UpdateSaleRequest(
             'capture',

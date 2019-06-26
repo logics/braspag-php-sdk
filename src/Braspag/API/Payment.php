@@ -33,7 +33,7 @@ class Payment implements BraspagSerializable
     private $tid;
     private $proofOfSale;
     private $authorizationCode;
-    private $softDescriptor = "Teste";
+    private $softDescriptor;
     private $returnUrl;
     private $provider;
     private $paymentId;
@@ -90,7 +90,7 @@ class Payment implements BraspagSerializable
      * @param int $installments
      * @param null|SplitPayment[] $splitPayments
      */
-    public function __construct($amount = 0, $installments = 1, $splitPayments = null)
+    public function __construct($amount = 0, $installments = null, $splitPayments = null)
     {
         $this->setAmount($amount);
         $this->setInstallments($installments);
