@@ -190,4 +190,3 @@ class FraudAnalysis implements BraspagSerializable
         return $this->fingerPrintId;
     }
 }
-
