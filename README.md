@@ -125,8 +125,17 @@ $products[] = (new Product())
 
 $cart = new Cart($products);
 
-// Informa os dados para análise anti-fraude (obrigatório): fingerPrintId, valor e Cart
-$fraudAnalysis = new FraudAnalysis("123456654322", 15700, $cart);
+/**
+ * Informa os dados para análise anti-fraude (obrigatório non caso de Marketplace): 
+ * fingerPrintId, valor, Cart e MerchantDefinedFields - esse último precisa ter ao menos o item 1 e 4 da tabela:
+ * @see https://braspag.github.io//manual/antifraude#tabela-31-merchantdefineddata-(cybersource)
+ */
+$fraudAnalysis = new FraudAnalysis(
+    "123456654322",
+    15700,
+    $cart,
+    ['1' => 'Guest', '4' => 'Web']
+);
 
 // Defina as regras de split dos subordinados
 $splitPayments = [

@@ -54,16 +54,38 @@ class FraudAnalysis implements BraspagSerializable
     /** @var array */
     private $browser;
 
-    public function __construct(string $fingerPrint = null, int $totalOrderAmount = null, Cart $cart = null)
-    {
-        $this->fingerPrintId = $fingerPrint;
+    /** @var array */
+    private $merchantDefinedFields;
+
+    /**
+     * FraudAnalysis constructor.
+     * @param string|null $fingerPrint
+     * @param int|null $totalOrderAmount
+     * @param Cart|null $cart
+     * @param array $merchantDefinedFields Campos definidos na tabela MerchantDefinedData (Cybersource) da DOC Braspag
+     * @see https://braspag.github.io//manual/antifraude#tabela-31-merchantdefineddata-(cybersource)
+     */
+    public function __construct(
+        string $fingerPrint = null,
+        int $totalOrderAmount = null,
+        Cart $cart = null,
+        array $merchantDefinedFields = []
+    ) {
         $this->totalOrderAmount = $totalOrderAmount;
         $this->cart = $cart;
         $this->browser = [
             'CookiesAccepted' => false,
             'BrowserFingerPrint' => $fingerPrint,
-            'IpAddress' => isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '127.0.0.1',
+            'IpAddress' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',
         ];
+        $this->merchantDefinedFields = [];
+
+        foreach ($merchantDefinedFields as $key => $value) {
+            $this->merchantDefinedFields[] = [
+                'Id' => $key,
+                'Value' => $value,
+            ];
+        }
     }
 
     /**
@@ -168,3 +190,4 @@ class FraudAnalysis implements BraspagSerializable
         return $this->fingerPrintId;
     }
 }
+

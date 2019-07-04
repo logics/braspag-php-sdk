@@ -58,7 +58,12 @@ class TestSale extends AuthenthicatedTest
             ;
 
             $cart = new Cart($products);
-            $fraudAnalysis = new FraudAnalysis("123456654322", 15700, $cart);
+            $fraudAnalysis = new FraudAnalysis(
+                "123456654322",
+                15700,
+                $cart,
+                ['1' => 'Guest', '4' => 'Web']
+            );
 
             // Crie a regra de split
             self::$splitPayments = [
