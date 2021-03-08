@@ -117,6 +117,7 @@ class Authenticator
 
         $headers = [
             'Accept: application/json',
+            'Authorization: Basic {base64}',
             'Content-Type: application/x-www-form-urlencoded',
             'Accept-Encoding: gzip',
             'User-Agent: Braspag/1.0 PHP SDK',
@@ -164,11 +165,11 @@ class Authenticator
                 $unserialized = $this->unserialize($responseBody);
                 break;
             case 400:
-                $exception = null;
+                $exception = new BraspagRequestException('Request Error', 400);
                 $response = json_decode($responseBody);
 
-                foreach ($response as $error) {
-                    $braspagError = new BraspagError($error->Message, $error->Code);
+                foreach ($response as $key => $error) {
+                    $braspagError = new BraspagError($error, 400);
                     $exception = new BraspagRequestException('Request Error', $statusCode, $exception);
                     $exception->setBraspagError($braspagError);
                 }
